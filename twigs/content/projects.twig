@@ -1,0 +1,177 @@
+{#
+    There several variables you can set at the top of a Twig to control some of the things
+    that the Framework includes in the output. Look at twigs/content/page.twig to see all
+    the possible variables and how they are used.
+#}
+
+{% set ajax = TRUE %}
+
+
+{% set fwutils = TRUE %}
+
+{#
+    If your page uses Parsley include this line at the start of the file
+{% set parsley = TRUE %}
+#}
+{#
+    If your page uses the inline editable package include this line at the start of the file
+{% set editable = TRUE %}
+#}
+
+
+{% set usebootbox = TRUE %}
+
+
+{#
+    if you want to set the title of your  page that is displayed in browser tabs set this variable
+{% set title = 'My Page Title' %}
+#}
+
+{#
+   If you want a breadcrumb trail below the navbar set this
+{% set breadcrumbs = [{link:'url1', text: 'Top Level'}, {link: 'url2': text: 'Second level'}, {text: 'Where we are'}] %}
+#}
+
+{#
+   If you want a <meta> Keywords tag set this
+{% set keywords = 'Framework, PHP, RedBean' %}
+#}
+
+{#
+   If you want a <meta> Description tag set this
+{% set description = 'A PHP framework for building RESTful systems' %}
+#}
+
+{#
+   You can set a schema that describes the page with this variable - see http://schema.org for what values are available
+{% set schema = 'itemscope="" itemtype="http://schema.org/AboutPage"' %}
+#}
+
+{% extends '@content/page.twig' %}
+{% import '@content/iconmacro.twig' as fa %}
+{# this brings in some useful macros for making forms
+{% import '@util/formmacro.twig' as f %}
+#}
+
+{# this brings in macros for accessing values in the config database
+{% import '@util/attrmacro.twig' as h %}
+#}
+
+{# this brings in some useful macros for making modals
+{% import '@util/modalmacro.twig' as m %}
+#}
+
+{% block meta %}
+{# <meta> for things like keywords etc.#}
+{% endblock meta %}
+
+{% block links %}
+{# <link> for non-css and non-type things#}
+{% endblock links %}
+
+{% block type %}
+{# <link> for webfonts #}
+{% endblock type %}
+
+{% block css %}
+{# <link> for any other CSS files you need #}
+{% endblock css %}
+
+{# If you want some inline CSS then put it in this block - no <style> tags - it is better NOT to use this though!!
+{% block style %}
+{% endblock stytle %}
+#}
+
+{# If you want to add critical CSS then put it in this block - no <style> tags
+{% block criticalCSS %}
+{% endblock criticalCSS %}
+#}
+
+{% block scripts %}
+{# <script src=""></script> for any other JS files you need #}
+{% endblock scripts %}
+
+{% block setup %}
+function delproject(e)
+    {
+        let pid = $(this).parent().parent().attr("data-id");
+        console.log(pid);
+        framework.deletebean(e, this, "project", pid, function(){console.log("test");}, "");
+       {# { let fff = `{{ projects|filter(p => p.name is same as(tr))}}`; #}
+    }
+{# Any javascript you need that is NOT run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+{% endblock setup %}
+
+{% block onload %}
+{# Any javascript you need that MUST run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+$('.delb').on('click', delproject);
+{% endblock onload %}
+
+{# uncomment this if you don't want the default navbar to appear
+{% block navigation %}
+{% endblock navigation %}
+#}
+
+{#
+    Edit the file navbar.twig to change the appearance of the
+    navigation bar. It is included by default from page.twig
+#}
+
+{# uncomment this and delete header block below to remove the <header> tag altogether
+{% block pageheader %}
+{% endblock pageheader %}
+#}
+
+{#
+    If you have a standard header for all (most) pages then put the
+    content in the file twigs/surround/header.twig. It is included by page.twig by
+    default. You then don't need to have a header block either.
+#}
+
+{% block header %}
+    <article class="col-md-12">
+        <h1 class="text-center">{{action}}</h1>
+    </article>
+{% endblock header %}
+
+{% block main %} 
+    <p class="text-center">Your projects</a>
+    <div class="row" style="margin-bottom:15px;">
+        {% for project in projects %}
+            <div class="col-sm-6"> 
+                <div class="card">
+                    <div data-id={{project.id}} class="card-body">
+                        <h5 class="card-title">{{ project.name}}</h5>
+                        <p class="card-text">{{project.description}}</p>
+                        <p class="card-text">Contributors</p>
+                        {% for user in project.sharedUserList %}
+                            <p class="card-text">{{user.login}}</p>
+                        {% endfor %}
+                        <a href="{{base}}/project/{{project.id}}">More details</a>
+                        <p class="card-text">{{fa.delete("delb")}}</p>        
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Start Date: {{project.start_date}}</small>
+                    </div>
+                </div>    
+            </div>
+        {% endfor %}
+    </div>
+{% endblock main %}
+
+{# uncomment this and delete the footer block below to remove the <footer> tag altogether
+{% block pagefooter %}
+{% endblock pagefooter %}
+#}
+
+{#
+    If you have a standard footer for all (most) pages then put the
+    content in the file twigs/surround/footer.twig. It is included by page.twig by
+    default. You then don't need to have a footer block either.
+#}
+
+{% block footer %}
+    <article class="col-md-12">
+        <p class="text-center">Footer</p>
+    </article>
+{% endblock footer %}

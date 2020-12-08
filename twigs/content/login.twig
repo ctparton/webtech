@@ -1,8 +1,7 @@
 {% extends '@content/page.twig' %}
 
-{% block navigation %}
+{# {% block navigation %}
     {# Might not want navigation bar on a login page... #}
-{% endblock navigation %}
 
 {% block header %}
     <section class="ml-auto col-md-4 mr-auto mt-5">
@@ -41,6 +40,8 @@
                     <p>or</p>
                     <p><a class="btn btn-info btn-sm" href="{{base}}/register">Register</a></p>
                 {% endif %}
+                <p><small>Not yet got an account,<a href="{{base}}/register"> create one</a></small></p>
+
             </form>
         </article>
     </section>
