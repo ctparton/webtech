@@ -13,23 +13,31 @@
     namespace Model;
 
     use \Support\Context;
-/**
- * Upload table stores info about files that have been uploaded...
- * @psalm-suppress UnusedClass
- */
     class Project extends \RedBeanPHP\SimpleModel
     {
-        use \ModelExtend\Upload;
 /**
- * Return the owner of this uplaod
+ * Returns the array of notes associated with this project
  *
- * @return ?object
+ * @return array
+ */
+        public function ownNoteList() : array
+        {
+            return $this->bean->ownNoteList;
+        }
+/**
+ * Return the array of users associated with this project
+ *
+ * @return array
  */
         public function sharedUserList() : array
         {
             return $this->bean->sharedUserList;
         }
-
+/**
+ * Return the owner of this uplaod
+ *
+ * @return ?object
+ */
         public function owner() : ?object
         {
             return $this->bean->user;

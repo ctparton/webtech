@@ -1,36 +1,27 @@
 {% extends '@content/page.twig' %}
 
-{% block onload %}
-    $('#alert').on('click', function(){
-        bootbox.alert('Hello World')
-    })
-{% endblock onload %}
-
 {% block header %}
     <section class="col-md-12 mt-5">
-        <h1 class="text-center">Header</h1>
+        <h1 class="text-center">Welcome to logger</h1>
+        <h2 class="text-center text-muted">Take notes on your projects<h2>
     </section>
 {% endblock header %}
 
 {% block main %}
     <section class="row">
         <aside class="col">
-            <p>Left</p>
         </aside>
         <article class="col-md-8">
             <div class="jumbotron">
-                This is the middle column
+            {% if context.hasuser %}
+                <p>Go to your <a href="{{base}}/projects">projects</a></p>
+            {% else %}
+                <p>Please sign in to continue</p>
+            {% endif %}   
             </div>
-            <button id="alert" class="btn btn-lg btn-info" type="button">Alert</button>
         </article>
         <aside id="rightbar" class="col">
-            <p>Right</p>
         </aside>
     </section>
 {% endblock main %}
 
-{% block footer %}
-    <section class="col-md-12">
-        <p class="text-center">Footer</p>
-    </section>
-{% endblock footer %}

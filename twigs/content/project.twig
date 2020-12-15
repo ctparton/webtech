@@ -1,9 +1,4 @@
 {#
-    There several variables you can set at the top of a Twig to control some of the things
-    that the Framework includes in the output. Look at twigs/content/page.twig to see all
-    the possible variables and how they are used.
-#}
-{#
     If your page uses AJAX include this line at the start of the file - it loads a different version of jQuery.
 {% set ajax = TRUE %}
 #}
@@ -11,29 +6,16 @@
     If your page uses the Framework JS util package include this line at the start of the file
 {% set fwutils = TRUE %}
 #}
-{#
-    If your page uses Parsley include this line at the start of the file
+
 {% set parsley = TRUE %}
-#}
-{#
-    If your page uses the inline editable package include this line at the start of the file
-{% set editable = TRUE %}
-#}
 
 {#
     If your page does NOT need not use bootbox then this will stop the JS being loaded for it
 {% set usebootbox = FALSE %}
 #}
 
-{#
-    if you want to set the title of your  page that is displayed in browser tabs set this variable
-{% set title = 'My Page Title' %}
-#}
 
-{#
-   If you want a breadcrumb trail below the navbar set this
-{% set breadcrumbs = [{link:'url1', text: 'Top Level'}, {link: 'url2': text: 'Second level'}, {text: 'Where we are'}] %}
-#}
+{% set title = 'Project' %}
 
 {#
    If you want a <meta> Keywords tag set this
@@ -52,13 +34,7 @@
 
 {% extends '@content/page.twig' %}
 
-{# this brings in some useful macros for making forms
 {% import '@util/formmacro.twig' as f %}
-#}
-
-{# this brings in macros for accessing values in the config database
-{% import '@util/attrmacro.twig' as h %}
-#}
 
 {# this brings in some useful macros for making modals
 {% import '@util/modalmacro.twig' as m %}
@@ -78,83 +54,78 @@
 
 {% block css %}
 {# <link> for any other CSS files you need #}
+<link rel="stylesheet" href="{{assets}}/css/bootstrap-duration-picker.css"/>
 {% endblock css %}
-
-{# If you want some inline CSS then put it in this block - no <style> tags - it is better NOT to use this though!!
-{% block style %}
-{% endblock stytle %}
-#}
-
-{# If you want to add critical CSS then put it in this block - no <style> tags
-{% block criticalCSS %}
-{% endblock criticalCSS %}
-#}
 
 {% block scripts %}
 {# <script src=""></script> for any other JS files you need #}
+<script src="{{assets}}/js/bootstrap-duration-picker.js"></script>
 {% endblock scripts %}
 
 {% block setup %}
-{# Any javascript you need that is NOT run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+function toggleContributors(e) {
+    $(this).toggleClass('fa-toggle-on');
+    $('#contribForm').toggleClass('d-none');
+};
 {% endblock setup %}
 
 {% block onload %}
-{# Any javascript you need that MUST run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+$('.contribBtn').on('click', toggleContributors);
+
 {% endblock onload %}
 
-{# uncomment this if you don't want the default navbar to appear
-{% block navigation %}
-{% endblock navigation %}
-#}
 
-{#
-    Edit the file navbar.twig to change the appearance of the
-    navigation bar. It is included by default from page.twig
-#}
-
-{# uncomment this and delete header block below to remove the <header> tag altogether
-{% block pageheader %}
-{% endblock pageheader %}
-#}
-
-{#
-    If you have a standard header for all (most) pages then put the
-    content in the file twigs/surround/header.twig. It is included by page.twig by
-    default. You then don't need to have a header block either.
-#}
+{% import '@content/iconmacro.twig' as fa %} 
 
 {% block header %}
-    <article class="col-md-12">
-        <h1 class="text-center">{{action}}</h1>
-    </article>
+   
 {% endblock header %}
 
 {% block main %}
     <section class="row">
         <article class="ml-auto col-md-8 mr-auto">
-            <p class="text-center">{{user}} </p>
-            <p class="text-center">{{project}}</p>
-            <p class="text-center">owner {{project.owner}}</p>
-             {% for owner in project.sharedUserList %}
-                    <p>test {{owner}}</p>
-                {% endfor %}
+            <h1>{{project.name}}</h1>
+            <h4>Owned by: {{project.owner.login}}</h4> 
+            <h4>Contributors: {{project.sharedUserList|map(p => p.login)|join(', ')}}</h4>
+            <p>{{project.description}}</p>
+            <a class="btn btn-primary" href="{{base}}/{{action}}/{{project.id}}/note">Add new note</a>
+            <br/>
+            <br/>
+            <p class="font-weight-bold">Time spent</p>
+            <p>{{ splural(time['day'], 'day')}}  {{splural(time['hour'], 'hour')}} {{splural(time['minute'], 'minute')}} </p>
+            <br/>
+            {% if user == project.owner.login %}
+                <p>Add Contributor {{fa.fa('toggle-off', 'contribBtn')}}</p>
+                {% include '@util/message.twig' %}
+                {{f.startform({method: 'post', id: 'contribForm', multi: TRUE, class: 'd-none'})}}
+                {{f.text({label: 'Add new contributor', id: 'icontributor', name: 'contributor', 
+                    ph: 'username', required: true })}}    
+                {{f.submit({value: 'Submit'})}}     
+                {{f.endform()}} 
+            {% endif %}
+            <div class="container">
+            <div class="row" style="margin-bottom:15px;">
+                {% for note in project.ownNoteList %}       
+                <div class="col-sm-15"> 
+                    <div class="card">
+                        <div data-id={{project.id}} class="card-body">
+                            <h5 class="card-title">{{ note.owner.login}}</h5>
+                            <p class="card-text">{{note.text}}</p>
+                            {% for upload in note.sharedUploadList %}
+                                <p> Filename {{upload.filename}} </p>
+                                <a href="{{base}}/private/file/{{upload.getID}}">download</a>
+                            {% endfor %}
+                            <p class="card-text">{{fa.delete("delb")}}</p>     
+                        </div>
+                        <div data-id={{project.id}} class="card-footer">
+                            <small class="text-muted">Start Date: {{note.start_date}}</small>
+                        </div>   
+                </div>
+                {% endfor %}    
+            </div>
+             </div>
         </article>
     </section>
 {% endblock main %}
 
-{# uncomment this and delete the footer block below to remove the <footer> tag altogether
-{% block pagefooter %}
-{% endblock pagefooter %}
-#}
 
-{#
-    If you have a standard footer for all (most) pages then put the
-    content in the file twigs/surround/footer.twig. It is included by page.twig by
-    default. You then don't need to have a footer block either.
-#}
-
-{% block footer %}
-    <article class="col-md-12">
-        <p class="text-center">Footer</p>
-    </article>
-{% endblock footer %}

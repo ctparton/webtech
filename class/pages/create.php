@@ -1,7 +1,7 @@
 <?php
 /**
- * A class that contains code to handle any requests for  /create/
- *
+ * A class that contains code to handle any requests for /create/
+ * It will allow a signed in user to create new projects
  * @author Callum Parton <c.parton@ncl.ac.uk>
  * @copyright 2020 Callum Parton
  * @package Framework
@@ -30,8 +30,7 @@
             {
                 try 
                 {
-                  
-                    $user = $context->load('user', (int) $context->user()->id, TRUE);
+                    $user = $context->load('user', (int) $context->user()->id, TRUE);                 
                     $projectName = $formData->mustfetch('pname');
                     $projectDesc = $formData->fetch('pdesc');
                     $projectModel = R::dispense('project');
@@ -41,13 +40,12 @@
                     $projectModel->description = $projectDesc;
                     $projectModel->startDate = $context->utcnow();
                     $projectId = R::store( $projectModel);
-                    $context->local()->message(\Framework\Local::MESSAGE, "A new project has been created");
+                    $context->local()->message(\Framework\Local::MESSAGE, "A project (".$projectName.") has been created");
                 }
                 catch (\Framework\Exception\BadValue $e) 
                 {
                     $context->local()->message(\Framework\Local::ERROR, "A new project must have a name");
                 }
-
             } 
             return '@content/create.twig';
         }
