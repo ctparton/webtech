@@ -11,11 +11,14 @@
     namespace Pages;
 
     use \Support\Context as Context;
+    
+    
 /**
  * Support /project/
  */
     class Projects extends \Framework\Siteaction
     {
+        use \Support\NoCache;
 /**
  * Handle project operations
  *
@@ -25,6 +28,7 @@
  */
         public function handle(Context $context)
         {
+            // setCache($context);
             $user =  $context->user();
             $projects = \R::findAll('project');
             $context->local()->addval('projects', $projects);

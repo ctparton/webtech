@@ -33,23 +33,14 @@
 {% endblock css %}
 
 {% block scripts %}
-{# <script src=""></script> for any other JS files you need #}
+<script src="{{assets}}/js/extended-util.js"></script>
 {% endblock scripts %}
 
 {% block setup %}
-function delproject(e)
-    {
-        let pid = $(this).parent().parent().attr("data-id");
-        $(this).parent().parent().addClass("d-none");
-        $(this).parent().parent().next().addClass("d-none")
-        framework.deletebean(e, this, "project", pid, function(){console.log("test");}, "");
-    }
-{# Any javascript you need that is NOT run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+$('.delb').click({type: "project"}, delbeanDomRemove);
 {% endblock setup %}
 
 {% block onload %}
-{# Any javascript you need that MUST run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
-$('.delb').on('click', delproject);
 {% endblock onload %}
 
 {% block header %}
@@ -60,19 +51,19 @@ $('.delb').on('click', delproject);
 
 {% block main %} 
     <p class="text-center">Hi {{user.login}}, here are your projects </a>
-    <div class="row" style="margin-bottom:15px;">
+    <div class="row">
         {% for project in projects|filter(p => user.login in p.sharedUserList|join(', '))%}       
-            <div class="col-sm-6"> 
-                <div class="card">
+            <div class="col-md-6 my-3"> 
+                <div class="card" >
                     <div data-id={{project.id}} class="card-body">
                         <h5 class="card-title">{{ project.name}}</h5>
                         <p class="card-text">{{project.description}}</p>
                         <p class="card-text">Contributors</p>
-                        {% for user in project.sharedUserList %}
-                            <p class="card-text">{{user.login}}</p>
-                        {% endfor %}
-                        <a href="{{base}}/project/{{project.id}}">More details</a>
-                        <p class="card-text">{{fa.delete("delb")}}</p>     
+                        <p class="card-text">{{project.sharedUserList|map(p => p.login)|join(', ')}}</p>
+                        <a class="btn btn-info" href="{{base}}/project/{{project.id}}">More details</a>
+                        {% if user.login == project.owner.login %}
+                            <p class="card-text">{{fa.delete("delb")}}</p> 
+                        {% endif %}        
                     </div>
                     <div data-id={{project.id}} class="card-footer">
                             <small class="text-muted">Start Date: {{project.start_date}}</small>

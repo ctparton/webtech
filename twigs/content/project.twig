@@ -1,45 +1,12 @@
-{#
-    If your page uses AJAX include this line at the start of the file - it loads a different version of jQuery.
 {% set ajax = TRUE %}
-#}
-{#
-    If your page uses the Framework JS util package include this line at the start of the file
 {% set fwutils = TRUE %}
-#}
-
+{% set usebootbox = TRUE %}
 {% set parsley = TRUE %}
 
-{#
-    If your page does NOT need not use bootbox then this will stop the JS being loaded for it
-{% set usebootbox = FALSE %}
-#}
-
-
 {% set title = 'Project' %}
-
-{#
-   If you want a <meta> Keywords tag set this
-{% set keywords = 'Framework, PHP, RedBean' %}
-#}
-
-{#
-   If you want a <meta> Description tag set this
-{% set description = 'A PHP framework for building RESTful systems' %}
-#}
-
-{#
-   You can set a schema that describes the page with this variable - see http://schema.org for what values are available
-{% set schema = 'itemscope="" itemtype="http://schema.org/AboutPage"' %}
-#}
-
+{% set keywords = 'projects, management, development, agile' %}
 {% extends '@content/page.twig' %}
-
 {% import '@util/formmacro.twig' as f %}
-
-{# this brings in some useful macros for making modals
-{% import '@util/modalmacro.twig' as m %}
-#}
-
 {% block meta %}
 {# <meta> for things like keywords etc.#}
 {% endblock meta %}
@@ -59,14 +26,12 @@
 
 {% block scripts %}
 {# <script src=""></script> for any other JS files you need #}
+<script src="{{assets}}/js/extended-util.js"></script>
 <script src="{{assets}}/js/bootstrap-duration-picker.js"></script>
 {% endblock scripts %}
 
 {% block setup %}
-function toggleContributors(e) {
-    $(this).toggleClass('fa-toggle-on');
-    $('#contribForm').toggleClass('d-none');
-};
+$('.delb').click({type: "note"}, delbeanDomRemove);
 {% endblock setup %}
 
 {% block onload %}
@@ -82,8 +47,7 @@ $('.contribBtn').on('click', toggleContributors);
 {% endblock header %}
 
 {% block main %}
-    <section class="row">
-        <article class="ml-auto col-md-8 mr-auto">
+        <article class="ml-auto col-md-12 mr-auto">
             <h1>{{project.name}}</h1>
             <h4>Owned by: {{project.owner.login}}</h4> 
             <h4>Contributors: {{project.sharedUserList|map(p => p.login)|join(', ')}}</h4>
@@ -103,29 +67,29 @@ $('.contribBtn').on('click', toggleContributors);
                 {{f.submit({value: 'Submit'})}}     
                 {{f.endform()}} 
             {% endif %}
-            <div class="container">
-            <div class="row" style="margin-bottom:15px;">
+            <div class="row">
                 {% for note in project.ownNoteList %}       
-                <div class="col-sm-15"> 
-                    <div class="card">
-                        <div data-id={{project.id}} class="card-body">
-                            <h5 class="card-title">{{ note.owner.login}}</h5>
-                            <p class="card-text">{{note.text}}</p>
-                            {% for upload in note.sharedUploadList %}
-                                <p> Filename {{upload.filename}} </p>
-                                <a href="{{base}}/private/file/{{upload.getID}}">download</a>
-                            {% endfor %}
-                            <p class="card-text">{{fa.delete("delb")}}</p>     
+                    <div class="col-md-12 my-3"> 
+                        <div class="card w-100">
+                            <div data-id={{note.id}} class="card-body">
+                                <h5 class="card-title">Note added by {{ note.owner.login}}</h5>
+                                <p class="card-text">{{note.text}}</p>
+                                {% for upload in note.sharedUploadList %}
+                                    <p> Filename {{upload.filename}} </p>
+                                    <a href="{{base}}/private/file/{{upload.getID}}">download</a>
+                                {% endfor %}
+                                {% if user == note.owner.login %}
+                                    <p class="card-text">{{fa.delete("delb")}}</p>  
+                                {% endif %}       
+                            </div>
+                            <div data-id={{note.id}} class="card-footer">
+                                <small class="text-muted">Start Date: {{note.start_date}}</small>
+                            </div>   
                         </div>
-                        <div data-id={{project.id}} class="card-footer">
-                            <small class="text-muted">Start Date: {{note.start_date}}</small>
-                        </div>   
-                </div>
+                    </div>    
                 {% endfor %}    
             </div>
-             </div>
         </article>
-    </section>
 {% endblock main %}
 
 

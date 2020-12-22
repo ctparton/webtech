@@ -17,6 +17,7 @@
  */
     class Project extends \Framework\Siteaction
     {
+        use \Support\NoCache;    
 /**
  * Handle project operations
  *
@@ -33,7 +34,7 @@
             $project = $context->load('project', (int) $rest[0], TRUE);
             $context->local()->addval('project', $project);
             $userId = (int) $context->user()->id;
-            $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE user_id ='.$userId);
+            $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $userId]);
             $context->local()->addval('time', Project::fmtDuration($timeSpent));
 
             // If we are handling request to add a new note to current project
