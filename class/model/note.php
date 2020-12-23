@@ -6,7 +6,7 @@
  * Note attributes that cannot be accessed by Twig for some reason!
  *
  * @author Callum Parton <c.parton@ncl.ac.uk>
- * @copyright Newcastle University
+ * @copyright 2020 Callum Parton
  * @package Framework
  * @subpackage SystemModel
  */

@@ -1,7 +1,7 @@
 <?php
 /**
  * A class that contains code to handle any requests for /projects/
- * This class passes the list of all project beans to the projects twig. 
+ * This class passes the list of all project beans to the projects twig for display. 
  *
  * @author Callum Parton <c.parton@ncl.ac.uk>
  * @copyright 2020
@@ -28,7 +28,6 @@
  */
         public function handle(Context $context)
         {
-            // setCache($context);
             $user =  $context->user();
             $projects = \R::findAll('project');
             $context->local()->addval('projects', $projects);

@@ -58,7 +58,9 @@ $('.delb').click({type: "project"}, delbeanDomRemove);
                     <div data-id={{project.id}} class="card-body">
                         <h5 class="card-title">{{ project.name}}</h5>
                         <p class="card-text">{{project.description}}</p>
-                        <p class="card-text">Contributors</p>
+                        <p class="card-text font-weight-bold">Owner</p>
+                        <p class="card-text">{{project.owner.login}}</p>
+                        <p class="card-text font-weight-bold">Contributors</p>
                         <p class="card-text">{{project.sharedUserList|map(p => p.login)|join(', ')}}</p>
                         <a class="btn btn-info" href="{{base}}/project/{{project.id}}">More details</a>
                         {% if user.login == project.owner.login %}

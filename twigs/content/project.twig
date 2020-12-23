@@ -74,10 +74,16 @@ $('.contribBtn').on('click', toggleContributors);
                             <div data-id={{note.id}} class="card-body">
                                 <h5 class="card-title">Note added by {{ note.owner.login}}</h5>
                                 <p class="card-text">{{note.text}}</p>
-                                {% for upload in note.sharedUploadList %}
-                                    <p> Filename {{upload.filename}} </p>
-                                    <a href="{{base}}/private/file/{{upload.getID}}">download</a>
-                                {% endfor %}
+                                {% if note.sharedUploadList is not empty %}
+                                    <p class="font-weight-bold">Attachment</p>
+                                    <div class="attatchment" data-id={{note.sharedUploadList|map((p) => p.id)|join(',' )}}>
+                                    {% for upload in note.sharedUploadList %}
+                                        <p> Filename: {{upload.filename}} </p>
+                                        <a href="{{base}}/private/file/{{upload.getID}}">download</a>
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                               
                                 {% if user == note.owner.login %}
                                     <p class="card-text">{{fa.delete("delb")}}</p>  
                                 {% endif %}       

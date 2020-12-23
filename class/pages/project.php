@@ -3,7 +3,7 @@
  * A class that contains code to handle any requests for /project/
  * This class will be used to return the notes and uploads of a single project
  * where requests are made in the form /project/projectid/
- * @author Callum Parton <Your@email.org>
+ * @author Callum Parton <c.parton@ncl.ac.uk>
  * @copyright 2020 Callum Parton
  * @package Framework
  * @subpackage UserPages

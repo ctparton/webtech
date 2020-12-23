@@ -6,7 +6,7 @@
  * Project attributes that cannot be accessed by Twig!
  *
  * @author Callum Parton <c.parton@ncl.ac.uk>
- * @copyright Newcastle University
+ * @copyright 2020 Callum Parton
  * @package Framework
  * @subpackage SystemModel
  */

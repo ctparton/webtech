@@ -26,7 +26,7 @@
 {% endblock css %}
 
 {% block scripts %}
-{# Credit: https://github.com/koss-lebedev/bootstrap-duration-picker #}
+{# Code adapted from: https://github.com/koss-lebedev/bootstrap-duration-picker #}
 <script src="{{assets}}/js/bootstrap-duration-picker.js"></script>
 {% endblock scripts %}
 
@@ -79,7 +79,7 @@
             {{f.startform({method: 'post', id: 'noteForm', multi: TRUE})}}
             {{f.textarea({label: 'Write a bit about the project', id: 'inotetext', name: 'notetext', 
                 ph: 'Today I worked on...', required: true})}}
-            {{f.text({label: 'Update time spent on project', id: 'iduration', name: 'duration', class:'invisible' })}}     
+            {{f.text({label: 'Update time spent on project', id: 'iduration', name: 'duration', class:'invisible'})}}     
             {{f.text({id: 'isecondsholder', name: 'secondsholder', readonly: 'true', class:'d-none'})}}   
             {{f.file({label: 'Upload an attachment', id: 'ifilesubmit', name: 'filesubmit', multiple: 'false'})}}
             {{f.submit({value: 'Submit'})}}     
@@ -88,19 +88,6 @@
     </section>
 {% endblock main %}
 
-{# uncomment this and delete the footer block below to remove the <footer> tag altogether
 {% block pagefooter %}
 {% endblock pagefooter %}
-#}
 
-{#
-    If you have a standard footer for all (most) pages then put the
-    content in the file twigs/surround/footer.twig. It is included by page.twig by
-    default. You then don't need to have a footer block either.
-#}
-
-{% block footer %}
-    <article class="col-md-12">
-        <p class="text-center">Footer</p>
-    </article>
-{% endblock footer %}

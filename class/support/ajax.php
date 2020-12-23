@@ -31,7 +31,7 @@
  *                   If you want an OR then you need to group the pairs to be ORed in yet another nested array.
  */
         protected static $fwPermissions = [
-            FWAjax\Bean::class          => ['project' => [TRUE, [], []], 'note' => [TRUE, [], []] ],
+            FWAjax\Bean::class          => ['project' => [TRUE, [], []], 'note' => [TRUE, [], []], 'upload' => [TRUE, [], []] ],
             FWAjax\Hints::class         => [],
             FWAjax\Paging::class        => [],
             FWAjax\PwCheck::class       => [],
