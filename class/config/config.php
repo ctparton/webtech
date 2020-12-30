@@ -48,10 +48,10 @@
         public static $defaultCSP = [
                 'connect-src' => ["'self'"],
                 'default-src' => ["'self'"],
-                'font-src' => ["'self'", "data:", "*.fontawesome.com"],
+                'font-src' => ["'self'", "data:", "*.fontawesome.com", "fonts.gstatic.com",  "fonts.googleapis.com"],
                 'img-src' => ["'self'", "data:"],
                 'script-src' => ["'self'", "stackpath.bootstrapcdn.com", "cdnjs.cloudflare.com", "code.jquery.com", "*.fontawesome.com"],
-                'style-src' => ["'self'", "*.fontawesome.com", "stackpath.bootstrapcdn.com"],
+                'style-src' => ["'self'", "*.fontawesome.com", "stackpath.bootstrapcdn.com", "fonts.gstatic.com", "fonts.googleapis.com"],
         ];
     }
 

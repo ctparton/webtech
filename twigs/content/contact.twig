@@ -5,6 +5,9 @@
 {% extends '@content/page.twig' %}
 
 {% import '@util/formmacro.twig' as f %}
+{% block css %}
+<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
+{% endblock css %}
 
 {% block header %}
     <section class="col-md-12 mt-5">

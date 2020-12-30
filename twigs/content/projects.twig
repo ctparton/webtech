@@ -29,7 +29,7 @@
 {% endblock type %}
 
 {% block css %}
-{# <link> for any other CSS files you need #}
+<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
@@ -67,7 +67,7 @@ $('.delb').click({type: "project"}, delbeanDomRemove);
                             <p class="card-text">{{fa.delete("delb")}}</p> 
                         {% endif %}        
                     </div>
-                    <div data-id={{project.id}} class="card-footer">
+                    <div data-id={{project.id}} class="card-footer start-date">
                             <small class="text-muted">Start Date: {{project.start_date}}</small>
                     </div>   
                 </div>    

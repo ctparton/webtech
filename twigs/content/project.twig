@@ -22,6 +22,7 @@
 {% block css %}
 {# <link> for any other CSS files you need #}
 <link rel="stylesheet" href="{{assets}}/css/bootstrap-duration-picker.css"/>
+<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
@@ -70,9 +71,10 @@ $('.contribBtn').on('click', toggleContributors);
             <div class="row">
                 {% for note in project.ownNoteList %}       
                     <div class="col-md-12 my-3"> 
-                        <div class="card w-100">
+                        <div class="card note-card w-100">
                             <div data-id={{note.id}} class="card-body">
                                 <h5 class="card-title">Note added by {{ note.owner.login}}</h5>
+                                <h6 class="card-subtitle text-muted">At: {{note.start_date}}</h6>
                                 <p class="card-text">{{note.text}}</p>
                                 {% if note.sharedUploadList is not empty %}
                                     <p class="font-weight-bold">Attachment</p>
@@ -85,12 +87,9 @@ $('.contribBtn').on('click', toggleContributors);
                                 {% endif %}
                                
                                 {% if user == note.owner.login %}
-                                    <p class="card-text">{{fa.delete("delb")}}</p>  
+                                    <p class="card-text float-right">{{fa.delete("delb")}}</p> 
                                 {% endif %}       
                             </div>
-                            <div data-id={{note.id}} class="card-footer">
-                                <small class="text-muted">Start Date: {{note.start_date}}</small>
-                            </div>   
                         </div>
                     </div>    
                 {% endfor %}    

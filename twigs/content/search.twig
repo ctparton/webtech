@@ -1,7 +1,7 @@
 {% set ajax = TRUE %}
 {% set fwutils = TRUE %}
 {% set usebootbox = TRUE %}
-{% set title = 'Search results for' ~ sQuery %}
+{% set title = 'Search results for ' ~ sQuery %}
 
 {#
    If you want a <meta> Keywords tag set this
@@ -29,7 +29,7 @@
 {% endblock type %}
 
 {% block css %}
-{# <link> for any other CSS files you need #}
+<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
