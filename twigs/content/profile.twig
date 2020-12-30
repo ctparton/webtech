@@ -46,7 +46,8 @@
 #}
 
 {% block scripts %}
-{# <script src="https://d3js.org/d3.v6.min.js"></script> #}
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="{{assets}}/js/bar-chart.js"></script>
 {% endblock scripts %}
 
 {% block setup %}
@@ -55,6 +56,12 @@
 
 {% block onload %}
 {# Any javascript you need that MUST run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
+const data = {{pTime|json_encode()|raw }};
+if (typeof data != "undefined") 
+{
+    createTimeChart(data);
+}
+
 {% endblock onload %}
 
 {# uncomment this if you don't want the default navbar to appear
@@ -79,28 +86,35 @@
 #}
 
 {% block header %}
-    <article class="col-md-12">
-        <h1 class="text-center">Profile</h1>
+    <article class="ml-auto col-md-8 mr-auto">
+        <h1 class="text-left">Profile</h1>
     </article>
 {% endblock header %}
 
 {% block main %}
     <section class="row">
         <article class="ml-auto col-md-8 mr-auto">
-            <p class="text-center">Welcome, {{user.login}}</a>
-            <p> Projects that you have worked on</p>
+            <h2 class="text-left text-muted">Welcome, {{user.login}}</h2>
+            <br/>
+            <h2> Projects that you have worked on</h2>
             <div class="row">
-                {% for project in projects %}       
+                {% for project in projects|filter(p => user.login in p.sharedUserList|join(', '))%}   
                     <div class="col-md-6 my-3"> 
                         <div class="card" >
                             <div data-id={{project.id}} class="card-body">
-                                <h5 class="card-title">{{ project.name}}</h5>
+                                <h5 class="card-title">{{ project.name}} {% if user.login == project.owner.login %} (Owner)  {% endif %} </h5>
                                 <p class="card-text">{{project.description}}</p>
                             </div> 
                         </div> 
                     </div>  
                 {% endfor %}
             </div>
+            <br/>
+            <div>
+                <h2>Time Spent across projects (Days)</h2>
+                <div id="d3-container">
+                </div>
+            </div> 
         </article>
     </section>
 {% endblock main %}
