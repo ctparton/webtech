@@ -33,16 +33,23 @@
             $pTime = array();
             foreach ($projects as $p) 
             {
-                $project = $context->load('project', (int) $p->id, TRUE);
-                $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $user->id]);
-                if (is_null($timeSpent)) 
+                if (is_array($p->sharedUserList))
                 {
-                    array_push($pTime, (object) array("name" => $project->name, "time" => 0));
-                } 
-                else 
-                {
-                    array_push($pTime, (object) array("name" => $project->name, "time" => $timeSpent / 86400));
-                } 
+                    // If user is owner or contributor to project
+                    if (in_array($user->login, array_map(function($e){return $e->login;}, $p->sharedUserList)))
+                    {
+                        $project = $context->load('project', (int) $p->id, TRUE);
+                        $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $user->id]);
+                        if (is_null($timeSpent)) 
+                        {
+                            array_push($pTime, (object) array("name" => $project->name, "time" => 0));
+                        } 
+                        else 
+                        {
+                            array_push($pTime, (object) array("name" => $project->name, "time" => $timeSpent / 86400));
+                        } 
+                    }
+                }
             }
             $context->local()->addval('pTime', $pTime);
             $context->local()->addval('projects', $projects);
