@@ -12,7 +12,8 @@
     use \Support\Context as Context;
     use \R;
 /**
- * Support /profile/, the profile page contains projects that the user owns
+ * Support /profile/, the profile page contains projects that the user owns 
+ * and visualises the time the user has spent on these projects
  */
     class Profile extends \Framework\Siteaction
     {
@@ -27,29 +28,40 @@
         public function handle(Context $context)
         {
             $context->web()->addCSP('script-src', 'd3js.org');
-            $user =  $context->user();
-            // $projects  = R::find( 'project', ' user_id = ? ', [ $user->id ] );
+            if (!$context->hasuser())
+            { 
+                // If no user logged in, throw error. Should not happen given this page has a login requirement
+                throw new \Framework\Exception\InternalError('No user');
+            }
+            $user = $context->user();
             $projects = \R::findAll('project');
+
+            // Initialise time spent on each project
             $pTime = array();
+            // filter out projects that user does not own or contribute to  
+            $projects = array_filter($projects, function($e) use (&$user) {return in_array($user->login, array_map(function($e) { return $e->login; }, $e->sharedUserList) ); });
+
             foreach ($projects as $p) 
             {
-                if (is_array($p->sharedUserList))
+                try
                 {
-                    // If user is owner or contributor to project
-                    if (in_array($user->login, array_map(function($e){return $e->login;}, $p->sharedUserList)))
+                    $project = $context->load('project', (int) $p->id, TRUE);
+                    $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $user->id]);
+                    if (is_null($timeSpent)) 
                     {
-                        $project = $context->load('project', (int) $p->id, TRUE);
-                        $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $user->id]);
-                        if (is_null($timeSpent)) 
-                        {
-                            array_push($pTime, (object) array("name" => $project->name, "time" => 0));
-                        } 
-                        else 
-                        {
-                            array_push($pTime, (object) array("name" => $project->name, "time" => $timeSpent / 86400));
-                        } 
-                    }
+                        array_push($pTime, (object) array("name" => $project->name, "time" => 0));
+                    } 
+                    else 
+                    {
+                        array_push($pTime, (object) array("name" => $project->name, "time" => $timeSpent / 86400));
+                    } 
+                }   
+                catch (\Framework\Exception\MissingBean $e)
+                {
+                    $context->local()->message(\Framework\Local::ERROR, $e->getMessage().' with id '.$p->id);
                 }
+                    
+                
             }
             $context->local()->addval('pTime', $pTime);
             $context->local()->addval('projects', $projects);

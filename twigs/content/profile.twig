@@ -1,21 +1,12 @@
 
-{% set title = 'My Profile' %}
+{% set title = 'My Profile - ' ~ user.login  %}
+
+{% set keywords = 'Profile, Graphical, Projects, Management' %}
 
 
-{#
-   If you want a <meta> Keywords tag set this
-{% set keywords = 'Framework, PHP, RedBean' %}
-#}
 
-{#
-   If you want a <meta> Description tag set this
-{% set description = 'A PHP framework for building RESTful systems' %}
-#}
+{% set description = 'View all of your active projects and visualise time spent on them' %}
 
-{#
-   You can set a schema that describes the page with this variable - see http://schema.org for what values are available
-{% set schema = 'itemscope="" itemtype="http://schema.org/AboutPage"' %}
-#}
 
 {% extends '@content/page.twig' %}
 
@@ -35,16 +26,6 @@
 <link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
-{# If you want some inline CSS then put it in this block - no <style> tags - it is better NOT to use this though!!
-{% block style %}
-{% endblock stytle %}
-#}
-
-{# If you want to add critical CSS then put it in this block - no <style> tags
-{% block criticalCSS %}
-{% endblock criticalCSS %}
-#}
-
 {% block scripts %}
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <script src="{{assets}}/js/bar-chart.js"></script>
@@ -55,34 +36,12 @@
 {% endblock setup %}
 
 {% block onload %}
-{# Any javascript you need that MUST run on load goes in this block. ***NB you don't need <script></script> tags here*** #}
-const data = {{pTime|json_encode()|raw }};
-if (typeof data != "undefined") 
-{
-    createTimeChart(data);
-}
+    const data = {{pTime|json_encode()|raw }};
+    if (Array.isArray(data) && data.length) 
+    {
+        createTimeChart(data);
+    }
 {% endblock onload %}
-
-{# uncomment this if you don't want the default navbar to appear
-{% block navigation %}
-{% endblock navigation %}
-#}
-
-{#
-    Edit the file navbar.twig to change the appearance of the
-    navigation bar. It is included by default from page.twig
-#}
-
-{# uncomment this and delete header block below to remove the <header> tag altogether
-{% block pageheader %}
-{% endblock pageheader %}
-#}
-
-{#
-    If you have a standard header for all (most) pages then put the
-    content in the file twigs/surround/header.twig. It is included by page.twig by
-    default. You then don't need to have a header block either.
-#}
 
 {% block header %}
     <article class="ml-auto col-md-8 mr-auto">
@@ -94,14 +53,19 @@ if (typeof data != "undefined")
     <section class="row">
         <article class="ml-auto col-md-8 mr-auto">
             <h2 class="text-left text-muted">Welcome, {{user.login}}</h2>
+            {% include '@util/message.twig' %}
             <br/>
-            <h2> Projects that you have worked on</h2>
+            {% if pTime %}
+                <h2> Projects that you have worked on</h2>
+            {% else %}
+                <h2> You haven't worked on any projects yet </h2>    
+            {% endif %}    
             <div class="row">
-                {% for project in projects|filter(p => user.login in p.sharedUserList|join(', '))%}   
+                {% for project in projects|filter(p => user.login in p.sharedUserList|join(', ')) %}   
                     <div class="col-md-6 my-3"> 
                         <div class="card" >
                             <div data-id={{project.id}} class="card-body">
-                                <h5 class="card-title">{{ project.name}} {% if user.login == project.owner.login %} (Owner)  {% endif %} </h5>
+                                <h5 class="card-title">{{ project.name}} {% if user.login == project.owner.login %} (Owner) {% endif %} </h5>
                                 <p class="card-text">{{project.description}}</p>
                             </div> 
                         </div> 
@@ -109,11 +73,11 @@ if (typeof data != "undefined")
                 {% endfor %}
             </div>
             <br/>
-            <div>
+            {% if pTime %}
                 <h2>Time Spent across projects (Days)</h2>
                 <div id="d3-container">
-                </div>
-            </div> 
+                </div> 
+            {% endif %}    
         </article>
     </section>
 {% endblock main %}

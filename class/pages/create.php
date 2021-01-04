@@ -26,6 +26,11 @@
         public function handle(Context $context)
         {
             $formData = $context->formdata('post');
+            if (!$context->hasuser())
+            { 
+                // If no user logged in, throw error. Should not happen given this page has a login requirement
+                throw new \Framework\Exception\InternalError('No user');
+            }
             if ($formData->exists('pname')) 
             {
      
@@ -35,19 +40,31 @@
                     try 
                     {
                         $projectName = $formData->mustfetch('pname');
-                        $projectDesc = $formData->fetch('pdesc');
-                        $projectModel = R::dispense('project');
-                        $projectModel->sharedUserList[] = $user;
-                        $projectModel->user = $user; 
-                        $projectModel->name = $projectName;
-                        $projectModel->description = $projectDesc;
-                        $projectModel->startDate = $context->utcnow();
-                        $projectId = R::store( $projectModel);
-                        $context->local()->message(\Framework\Local::MESSAGE, "A project (".$projectName.") has been created");
+                        $projectDesc = $formData->mustfetch('pdesc');
+                        if (!ctype_alnum($projectName))
+                        {
+                            $context->local()->message(\Framework\Local::ERROR, "Please ensure project name is alphanumeric");
+                        }
+                        elseif (empty($projectName) || empty($projectDesc))
+                        {
+                            $context->local()->message(\Framework\Local::ERROR, "Please ensure project name and project description are not empty");
+                        }
+                        else 
+                        {
+                            $projectModel = R::dispense('project');
+                            $projectModel->sharedUserList[] = $user;
+                            $projectModel->user = $user; 
+                            $projectModel->name = $projectName;
+                            $projectModel->description = $projectDesc;
+                            $projectModel->startDate = $context->utcnow();
+                            R::store( $projectModel);
+                            $context->local()->message(\Framework\Local::MESSAGE, "A project (".$projectName.") has been created");
+                        }
+            
                     }
                     catch (\Framework\Exception\BadValue $e) 
                     {
-                        $context->local()->message(\Framework\Local::ERROR, "A new project must have a name");
+                        $context->local()->message(\Framework\Local::ERROR, "Please ensure project has name and a description");
                     }
                 }
                 catch (\Framework\Exception\MissingBean $e)

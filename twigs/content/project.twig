@@ -32,12 +32,11 @@
 {% endblock scripts %}
 
 {% block setup %}
-$('.delb').click({type: "note"}, delbeanDomRemove);
+    $('.delb').click({type: "note"}, delbeanDomRemove);
 {% endblock setup %}
 
 {% block onload %}
-$('.contribBtn').on('click', toggleContributors);
-
+    $('.contribBtn').on('click', toggleContributors);
 {% endblock onload %}
 
 

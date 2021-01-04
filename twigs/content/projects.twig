@@ -2,17 +2,8 @@
 {% set fwutils = TRUE %}
 {% set usebootbox = TRUE %}
 {% set title = 'Logger - Your Projects' %}
-
-
-
 {% set keywords = 'Projects, Management, Logging' %}
-
-
-{#
-   If you want a <meta> Description tag set this
-{% set description = 'A PHP framework for building RESTful systems' %}
-#}
-
+{% set description = 'View all of your projects' %}
 {% extends '@content/page.twig' %}
 {% import '@content/iconmacro.twig' as fa %}
 
@@ -37,7 +28,7 @@
 {% endblock scripts %}
 
 {% block setup %}
-$('.delb').click({type: "project"}, delbeanDomRemove);
+    $('.delb').click({type: "project"}, delbeanDomRemove);
 {% endblock setup %}
 
 {% block onload %}
@@ -50,9 +41,13 @@ $('.delb').click({type: "project"}, delbeanDomRemove);
 {% endblock header %}
 
 {% block main %} 
-    <p class="text-center">Hi {{user.login}}, here are your projects </a>
+    {% if projects %}
+        <p class="text-center">Hi {{user.login}}, here are your projects </a>
+    {% else %}
+        <p class="text-center">Hi {{user.login}}, you currently do not have any projects which you own or contribute to </a>
+    {% endif %}
     <div class="row">
-        {% for project in projects|filter(p => user.login in p.sharedUserList|join(', '))%}       
+        {% for project in projects|filter(p => user.login in p.sharedUserList|join(', ')) %}       
             <div class="col-md-6 my-3"> 
                 <div class="card" >
                     <div data-id={{project.id}} class="card-body">

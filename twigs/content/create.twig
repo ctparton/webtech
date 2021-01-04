@@ -21,7 +21,7 @@
 {% block onload %}
     $('#projectForm').on('submit', function(e){
         return $(this).parsley().validate();
-    }).parsley();
+    }).parsley  ();
 {% endblock onload %}
 
 {% block header %}
@@ -33,14 +33,12 @@
 {% block main %}
     <section class="row">
         <article class="ml-auto col-md-8 mr-auto">
-        {% include '@util/message.twig' %}
-           {{f.startform({method: 'post', id: 'projectForm', multi: TRUE})}}
-           {{f.text({label: 'Project Name', id: 'ipname', name: 'pname', 
-                ph: 'My first Project!', required: true})}}
-            {{f.textarea({label: 'Project Description', id: 'ipdesc', name: 'pdesc', required: true, 
-                ph: 'This project involves'})}}    
-           {{f.submit({value: 'Submit'})}}     
-           {{f.endform()}} 
+            {% include '@util/message.twig' %}
+            {{f.startform({method: 'post', id: 'projectForm', multi: TRUE})}}
+            {{f.text({label: 'Project Name', id: 'ipname', name: 'pname', ph: 'My first Project!', required: true,  parsley: { type: 'alphanum'}})}}
+            {{f.textarea({label: 'Project Description', id: 'ipdesc', name: 'pdesc', required: true, ph: 'A description of the project aims and objectives' })}}    
+            {{f.submit({value: 'Create'})}}     
+            {{f.endform()}} 
         </article>
     </section>
 {% endblock main %}
