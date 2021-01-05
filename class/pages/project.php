@@ -59,20 +59,35 @@
                             $fileSaved = $upl->savefile($context, $file, FALSE, $user, 0); 
                         }           
                         $noteModel = R::dispense('note');
+
+                        // if file uploaded, add to note
                         if ($fileSaved)
                         {
                             $noteModel->sharedUploadList[] = $upl;
                         }          
+                        $text = $formData->mustfetch('notetext');
+                        $duration = $formData->fetch('secondsholder');
+                 
+                        if (!ctype_digit($duration) || $duration < 0)
+                        {
+                            $context->local()->message(\Framework\Local::ERROR, "Time spent on project must be a duration");
+                        }
                         // check note text is not empty
-                        // check duration is number, client and server side
-                        $noteModel->text = $formData->mustfetch('notetext');
-                        $noteModel->duration = $formData->fetch('secondsholder');
-                        $noteModel->user = $user; 
-                        $noteModel->startDate = $context->utcnow();
-                        $project->ownNoteList[] = $noteModel;
-                        R::store( $project);
-                        R::store($noteModel);
-                        $context->local()->message(\Framework\Local::MESSAGE, "A new note has been created ");       
+                        elseif (empty($text))
+                        {
+                            $context->local()->message(\Framework\Local::ERROR, "Please ensure note text is not empty");
+                        }
+                        else 
+                        {
+                            $noteModel->text = $text;
+                            $noteModel->duration = $duration;
+                            $noteModel->user = $user; 
+                            $noteModel->startDate = $context->utcnow();
+                            $project->ownNoteList[] = $noteModel;
+                            R::store( $project);
+                            R::store($noteModel);
+                            $context->local()->message(\Framework\Local::MESSAGE, "A new note has been created ");  
+                        }     
                     }
                     catch (\Framework\Exception\BadValue $e) 
                     {
