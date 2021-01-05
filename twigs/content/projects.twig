@@ -50,19 +50,19 @@
         {% for project in projects|filter(p => user.login in p.sharedUserList|join(', ')) %}       
             <div class="col-md-6 my-3"> 
                 <div class="card" >
-                    <div data-id={{project.id}} class="card-body">
+                    <div data-id={{project.getID}} class="card-body">
                         <h5 class="card-title">{{ project.name}}</h5>
                         <p class="card-text">{{project.description}}</p>
                         <p class="card-text font-weight-bold">Owner</p>
                         <p class="card-text">{{project.owner.login}}</p>
                         <p class="card-text font-weight-bold">Contributors</p>
                         <p class="card-text">{{project.sharedUserList|map(p => p.login)|join(', ')}}</p>
-                        <a class="btn btn-info" href="{{base}}/project/{{project.id}}">More details</a>
+                        <a class="btn btn-info" href="{{base}}/project/{{project.getID}}">More details</a>
                         {% if user.login == project.owner.login %}
                             <p class="card-text">{{fa.delete("delb")}}</p> 
                         {% endif %}        
                     </div>
-                    <div data-id={{project.id}} class="card-footer start-date">
+                    <div data-id={{project.getID}} class="card-footer start-date">
                             <small class="text-muted">Start Date: {{project.start_date}}</small>
                     </div>   
                 </div>    

@@ -45,8 +45,8 @@
             {
                 try
                 {
-                    $project = $context->load('project', (int) $p->id, TRUE);
-                    $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $user->id]);
+                    $project = $context->load('project', (int) $p->getID(), TRUE);
+                    $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->getID(), 'uid' => $user->getID()]);
                     if (is_null($timeSpent)) 
                     {
                         array_push($pTime, (object) array("name" => $project->name, "time" => 0));
@@ -58,7 +58,7 @@
                 }   
                 catch (\Framework\Exception\MissingBean $e)
                 {
-                    $context->local()->message(\Framework\Local::ERROR, $e->getMessage().' with id '.$p->id);
+                    $context->local()->message(\Framework\Local::ERROR, $e->getMessage().' with id '.$p->getID());
                 }
                     
                 

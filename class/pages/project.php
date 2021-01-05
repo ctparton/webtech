@@ -28,13 +28,17 @@
         public function handle(Context $context)
         {
             $rest = $context->rest();
-            $context->local()->addval('rest', $rest);
-            $context->local()->addval('restc', count($rest));
-            $context->local()->addval('user', $context->user()->login);     
+
+            if (!$context->hasuser())
+            { 
+                // If no user logged in, throw error. Should not happen given this page has a login requirement
+                throw new \Framework\Exception\InternalError('No user');
+            }
+            $context->local()->addval('user', $context->user()->login);
+            // error will appear on page if project with id $rest[0] does not exist      
             $project = $context->load('project', (int) $rest[0], TRUE);
             $context->local()->addval('project', $project);
-            $userId = (int) $context->user()->id;
-            $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->id, 'uid' => $userId]);
+            $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->getID(), 'uid' => (int) $context->user()->getID()]);
             $context->local()->addval('time', Project::fmtDuration($timeSpent));
 
             // If we are handling request to add a new note to current project
@@ -45,7 +49,9 @@
                 {
                     try 
                     {
-                        $user = $context->load('user', (int) $context->user()->id, TRUE); 
+                        $user = $context->load('user', (int) $context->user()->getID(), TRUE); 
+
+                        // upload a file if we have one
                         if ($context->formdata('file')->exists('filesubmit'))
                         {
                             $file = $context->formdata('file')->fileData('filesubmit'); 
@@ -57,13 +63,15 @@
                         {
                             $noteModel->sharedUploadList[] = $upl;
                         }          
+                        // check note text is not empty
+                        // check duration is number, client and server side
                         $noteModel->text = $formData->mustfetch('notetext');
                         $noteModel->duration = $formData->fetch('secondsholder');
                         $noteModel->user = $user; 
                         $noteModel->startDate = $context->utcnow();
                         $project->ownNoteList[] = $noteModel;
-                        $projectId = R::store( $project);
-                        $noteId = R::store($noteModel);
+                        R::store( $project);
+                        R::store($noteModel);
                         $context->local()->message(\Framework\Local::MESSAGE, "A new note has been created ");       
                     }
                     catch (\Framework\Exception\BadValue $e) 
@@ -88,7 +96,7 @@
                             $addedUser = array_filter($siteinfo->users(), function($e) use (&$contributor) {return $e->login === $contributor;});
                             foreach ($addedUser as &$value)
                             {
-                                $user = $context->load('user', (int) $value->id, TRUE);
+                                $user = $context->load('user', (int) $value->getID(), TRUE);
                             }
                             $currentContributors = $project->sharedUserList;
                             $project->sharedUserList[] = $user;

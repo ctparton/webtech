@@ -36,7 +36,7 @@
      
                 try 
                 {
-                    $user = $context->load('user', (int) $context->user()->id, TRUE);
+                    $user = $context->load('user', (int) $context->user()->getID(), TRUE);
                     try 
                     {
                         $projectName = $formData->mustfetch('pname');

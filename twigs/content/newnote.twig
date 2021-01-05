@@ -1,16 +1,3 @@
-{#
-    There several variables you can set at the top of a Twig to control some of the things
-    that the Framework includes in the output. Look at twigs/content/page.twig to see all
-    the possible variables and how they are used.
-#}
-{#
-    If your page uses AJAX include this line at the start of the file - it loads a different version of jQuery.
-{% set ajax = TRUE %}
-#}
-{#
-    If your page uses the Framework JS util package include this line at the start of the file
-{% set fwutils = TRUE %}
-#}
 {% set parsley = TRUE %}
 {% set title = 'Create new project' %}
 
@@ -32,40 +19,19 @@
 {% endblock scripts %}
 
 {% block setup %}
- $('#iduration').durationPicker({
-      onChanged: function (newVal) {
-        $('#isecondsholder').val(newVal);
-      }
+    $('#iduration').durationPicker({
+        onChanged: function (newVal)
+        {
+            $('#isecondsholder').val(newVal);
+        }
     });
 {% endblock setup %}
 
 {% block onload %}
-   
     $('#noteForm').on('submit', function(e){
         return $(this).parsley().validate();
     }).parsley();
 {% endblock onload %}
-
-{# uncomment this if you don't want the default navbar to appear
-{% block navigation %}
-{% endblock navigation %}
-#}
-
-{#
-    Edit the file navbar.twig to change the appearance of the
-    navigation bar. It is included by default from page.twig
-#}
-
-{# uncomment this and delete header block below to remove the <header> tag altogether
-{% block pageheader %}
-{% endblock pageheader %}
-#}
-
-{#
-    If you have a standard header for all (most) pages then put the
-    content in the file twigs/surround/header.twig. It is included by page.twig by
-    default. You then don't need to have a header block either.
-#}
 
 {% block header %}
     <article class="col-md-12">

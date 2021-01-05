@@ -52,7 +52,7 @@
             <h4>Owned by: {{project.owner.login}}</h4> 
             <h4>Contributors: {{project.sharedUserList|map(p => p.login)|join(', ')}}</h4>
             <p>{{project.description}}</p>
-            <a class="btn btn-primary" href="{{base}}/{{action}}/{{project.id}}/note">Add new note</a>
+            <a class="btn btn-primary" href="{{base}}/{{action}}/{{project.getID}}/note">Add new note</a>
             <br/>
             <br/>
             <p class="font-weight-bold">Time spent</p>
@@ -71,13 +71,13 @@
                 {% for note in project.ownNoteList %}       
                     <div class="col-md-12 my-3"> 
                         <div class="card note-card w-100">
-                            <div data-id={{note.id}} class="card-body">
+                            <div data-id={{note.getID}} class="card-body">
                                 <h5 class="card-title">Note added by {{ note.owner.login}}</h5>
                                 <h6 class="card-subtitle text-muted">At: {{note.start_date}}</h6>
                                 <p class="card-text">{{note.text}}</p>
                                 {% if note.sharedUploadList is not empty %}
                                     <p class="font-weight-bold">Attachment</p>
-                                    <div class="attatchment" data-id={{note.sharedUploadList|map((p) => p.id)|join(',' )}}>
+                                    <div class="attatchment" data-id={{note.sharedUploadList|map((p) => p.getID)|join(',' )}}>
                                     {% for upload in note.sharedUploadList %}
                                         <p> Filename: {{upload.filename}} </p>
                                         <a href="{{base}}/private/file/{{upload.getID}}">download</a>
