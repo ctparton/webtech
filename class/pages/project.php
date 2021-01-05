@@ -84,29 +84,44 @@
             else 
             {
                 $formData = $context->formdata('post');
+                // if user is trying to add a new user to a project
                 if ($formData->exists('contributor')) 
                 {
                     try 
                     {
                         $contributor = $formData->mustfetch('contributor');
                         $siteinfo = \Support\SiteInfo::getinstance();
-                        if(in_array($contributor, array_map(function($e){return $e->login;}, $siteinfo->users()))) 
-                        {
 
-                            $addedUser = array_filter($siteinfo->users(), function($e) use (&$contributor) {return $e->login === $contributor;});
-                            foreach ($addedUser as &$value)
+                        // check if user is not current user or already on project
+                        if ($contributor !== $context->user()->login && !in_array($contributor, array_map(function($e) { return $e->login; }, $project->sharedUserList)))
+                        {
+                            // if user is a registered user
+                            if(in_array($contributor, array_map(function($e){ return $e->login; }, $siteinfo->users()))) 
                             {
-                                $user = $context->load('user', (int) $value->getID(), TRUE);
+                                // filter users to get the added user
+                                $addedUser = array_filter($siteinfo->users(), function($e) use (&$contributor) {return $e->login === $contributor;});
+                                if (count($addedUser) == 1)
+                                {
+                                    $user = $context->load('user', (int) $addedUser[array_key_first($addedUser)]->getID(), TRUE);
+                                    $project->sharedUserList[] = $user;
+                                    R::store($project);
+                                    $context->local()->message(\Framework\Local::MESSAGE, "Added new contributor to project");
+                                } 
+                                else 
+                                {
+                                    $context->local()->message(\Framework\Local::ERROR, 'username '.$contributor.' does not exist or is not unique');
+                                }                           
                             }
-                            $currentContributors = $project->sharedUserList;
-                            $project->sharedUserList[] = $user;
-                            R::store($project);
-                            $context->local()->message(\Framework\Local::MESSAGE, "Added new contributor to project");
+                            else 
+                            {
+                                $context->local()->message(\Framework\Local::ERROR, 'Can not find user with username '.$contributor);
+                            }
                         }
                         else 
                         {
-                            $context->local()->message(\Framework\Local::ERROR, "user does not exist");
+                            $context->local()->message(\Framework\Local::ERROR, $contributor.' is already on the project');
                         }
+                       
                     }
                     catch (\Framework\Exception\BadValue $e) 
                     {

@@ -62,8 +62,7 @@
                 <p>Add Contributor {{fa.fa('toggle-off', 'contribBtn')}}</p>
                 {% include '@util/message.twig' %}
                 {{f.startform({method: 'post', id: 'contribForm', multi: TRUE, class: 'd-none'})}}
-                {{f.text({label: 'Add new contributor', id: 'icontributor', name: 'contributor', 
-                    ph: 'username', required: true })}}    
+                {{f.text({label: 'Add new contributor', id: 'icontributor', name: 'contributor', ph: 'username', required: true })}}    
                 {{f.submit({value: 'Submit'})}}     
                 {{f.endform()}} 
             {% endif %}
