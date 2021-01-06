@@ -2,8 +2,8 @@
 /**
  * A class that handles the update AJAX operation for updating a project bean via a form
  *
- * @author Callum Parton <callum.parton@ncl.ac.uk>
- * @copyright 2020 
+ * @author Callum Parton <c.parton@ncl.ac.uk>
+ * @copyright 2020 Callum Parton
  */
     namespace Ajax;
     use \Framework\Web\StatusCodes;
@@ -41,64 +41,98 @@
             $context = $this->context;
             $rest = $context->rest();
             $type = strtolower($rest[1]);
-            if (!in_array($type, ['project']))
+            if (!in_array($type, ['project', 'note']))
             {
                 throw new \Framework\Exception\BadValue('Invalid bean');
             }
-            $project = $context->load($type, $rest[2]);
+            
             if (!$context->hasuser())
             { 
                 // If no user logged in, throw error. Should not happen given this page has a login requirement
                 throw new \Framework\Exception\InternalError('No user');
             }
 
-            $formData = $context->formdata('post');
+            $formData = $context->formdata('put');
             // Handle project update
-            if ($formData->exists('pname')) 
+            if ($type === 'project')
             {
-                try 
+                if ($formData->exists('pname')) 
                 {
-                    $project = $context->load('project', (int) $formData->mustfetch('pID'), TRUE);
                     try 
                     {
-                        $projectName = $formData->mustfetch('pname');
-                        $projectDesc = $formData->mustfetch('pdesc');
-                        $change = FALSE;
-
-                        // Alphanumeric with spaces is valid
-                        if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
+                        $project = $context->load($type, $rest[2]);
+                        try 
                         {
-                            $context->web()->sendJSON("Cannot update project name with non alphanumeric value", StatusCodes::HTTP_BAD_REQUEST);
+                            $projectName = $formData->mustfetch('pname');
+                            $projectDesc = $formData->mustfetch('pdesc');
+                            $change = FALSE;
+    
+                            // Alphanumeric with spaces is valid
+                            if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
+                            {
+                                $context->web()->sendJSON("Cannot update, name must be alphanumeric ".$projectName, StatusCodes::HTTP_BAD_REQUEST);
+                            }
+                            else
+                            {
+                                if ($project->name !== $projectName && !empty($projectName))
+                                {
+                                    $project->name = $projectName;
+                                    $change = TRUE;
+                                }
+                                if ($project->description !== $projectDesc && !empty($projectDesc))
+                                {
+                                    $project->description = $projectDesc;
+                                    $change = TRUE;
+                                }
+                            }
+                            if ($change)
+                            {
+                                \R::store( $project);
+                                $context->web()->sendJSON("The project (".$projectName.") has been updated  ");
+                            }
                         }
-                        else
+                        catch (\Framework\Exception\BadValue $e) 
                         {
-                            if ($project->name !== $projectName && !empty($projectName))
-                            {
-                                $project->name = $projectName;
-                                $change = TRUE;
-                            }
-                            if ($project->description !== $projectDesc && !empty($projectDesc))
-                            {
-                                $project->description = $projectDesc;
-                                $change = TRUE;
-                            }
+                            $context->web()->sendJSON("Please ensure project has name and a description", StatusCodes::HTTP_BAD_REQUEST);
+                        }
+                    }
+                    catch (\Framework\Exception\MissingBean $e)
+                    {
+                        $context->web()->sendJSON("Could not load project", StatusCodes::HTTP_BAD_REQUEST);
+                    } 
+                }
+            }
+            else
+            {
+                if ($formData->exists('notetext')) 
+                {
+                    try 
+                    {
+                        $note = $context->load($type, $rest[2]); 
+   
+                        $text = $formData->mustfetch('notetext');
+                        $change = FALSE;
+                        if ($note->text !== $text && !empty($text))
+                        {
+                            $note->text = $text;
+                            $change = TRUE;
+                        }
+                        else 
+                        {
+                            $context->web()->sendJSON("Updated note cannot be empty and must be different!", StatusCodes::HTTP_BAD_REQUEST);
                         }
                         if ($change)
                         {
-                            \R::store( $project);
-                            $context->web()->sendJSON("The project (".$projectName.") has been updated  ");
+                            \R::store( $note);
+                            $context->web()->sendJSON("Note updated with text ".$text);
                         }
                     }
-                    catch (\Framework\Exception\BadValue $e) 
+                    catch (\Framework\Exception\MissingBean $e) 
                     {
-                        $context->web()->sendJSON("Please ensure project has name and a description", StatusCodes::HTTP_BAD_REQUEST);
+                        $context->web()->sendJSON("Could not load note", StatusCodes::HTTP_BAD_REQUEST);
                     }
-                }
-                catch (\Framework\Exception\MissingBean $e)
-                {
-                    $context->web()->sendJSON("Could not load user, check login conditions", StatusCodes::HTTP_BAD_REQUEST);
                 } 
-            }
+            } 
         }          
     }
 ?>

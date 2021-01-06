@@ -33,19 +33,7 @@
 {% endblock setup %}
 
 {% block onload %}
-    $('.editb').on('click', function(e){
-        let mID = $(this).parent().attr('data-target');
-        $('#'+mID).modal('show')
-        $('#projectEditForm'+mID).on('submit', function(e){
-            e.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '/ajax/update/project/'+$(this).parent().attr('data-id'),
-                data: $(this).serialize(),
-            });
-        });
-    });
-  
+    $('.editb').click({type: "project", formName: "projectEditForm"}, editItem);
 {% endblock onload %}
 
 {% block header %}
@@ -61,7 +49,6 @@
         <p class="text-center">Hi {{user.login}}, you currently do not have any projects which you own or contribute to </a>
     {% endif %}
     {% include '@util/message.twig' %}
-
     <div class="row">
         {% for project in projects|filter(p => user.login in p.sharedUserList|join(', ')) %}       
             <div class="col-md-6 my-3"> 
@@ -87,10 +74,9 @@
             {{m.open({id: project.getID, title: 'Edit Project'})}}
                 <div class="modal-body" data-id={{project.getID}}>
                     {{f.startform({method: 'post', id: 'projectEditForm' ~ project.getID, multi: TRUE})}}
-                    {{f.text({label: 'Project Name', id: 'ipname', name: 'pname', ph: project.name, required: TRUE })}}
-                    {{f.textarea({label: 'Project Description', id: 'ipdesc', name: 'pdesc', ph: project.description, required: TRUE })}}
-                    {{f.hidden({id: 'ipID', name: 'pID', value: project.getID})}} 
-                    {{f.submit({value: 'Edit'})}}  
+                    {{f.text({label: 'Project Name', id: 'ipname', name: 'pname', ph: project.name })}}
+                    {{f.textarea({label: 'Project Description', id: 'ipdesc', name: 'pdesc', ph: project.description })}}
+                    {{f.submit({value: 'Edit'})}}
                     {{f.endform()}}
                 </div>
                 <div class="modal-footer">

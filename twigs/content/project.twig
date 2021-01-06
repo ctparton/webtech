@@ -7,6 +7,8 @@
 {% set keywords = 'projects, management, development, agile' %}
 {% extends '@content/page.twig' %}
 {% import '@util/formmacro.twig' as f %}
+{% import '@util/modalmacro.twig' as m %}
+{% import '@content/iconmacro.twig' as fa %} 
 {% block meta %}
 {# <meta> for things like keywords etc.#}
 {% endblock meta %}
@@ -21,14 +23,12 @@
 
 {% block css %}
 {# <link> for any other CSS files you need #}
-<link rel="stylesheet" href="{{assets}}/css/bootstrap-duration-picker.css"/>
 <link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
 {# <script src=""></script> for any other JS files you need #}
 <script src="{{assets}}/js/extended-util.js"></script>
-<script src="{{assets}}/js/bootstrap-duration-picker.js"></script>
 {% endblock scripts %}
 
 {% block setup %}
@@ -37,10 +37,9 @@
 
 {% block onload %}
     $('.contribBtn').on('click', toggleContributors);
+    $('.editb').click({type: "note", formName: "noteEditForm"}, editItem);
 {% endblock onload %}
 
-
-{% import '@content/iconmacro.twig' as fa %} 
 
 {% block header %}
    
@@ -80,16 +79,31 @@
                                     {% for upload in note.sharedUploadList %}
                                         <p> Filename: {{upload.filename}} </p>
                                         <a href="{{base}}/private/file/{{upload.getID}}">download</a>
+                                        
                                     {% endfor %}
                                     </div>
                                 {% endif %}
                                
                                 {% if user == note.owner.login %}
                                     <p class="card-text float-right">{{fa.delete("delb")}}</p> 
+                                    <p data-toggle="modal" data-target={{note.getID}}>{{fa.edit("editb")}}</p>
                                 {% endif %}       
                             </div>
                         </div>
-                    </div>    
+                    </div> 
+                    {{m.open({id: note.getID, title: 'Edit Note'})}}
+                        <div class="modal-body" data-id={{note.getID}}>
+                            {{f.startform({method: 'post', id: 'noteEditForm' ~ note.getID, multi: TRUE})}}           
+                            {{f.textarea({label: 'Update Task', id: 'inotetext', name: 'notetext', ph: note.text, required: true})}}  
+                            {{f.submit({value: 'Edit'})}}     
+                            {{f.endform()}} 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>   
                 {% endfor %}    
             </div>
         </article>

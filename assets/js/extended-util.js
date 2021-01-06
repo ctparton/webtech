@@ -54,3 +54,25 @@
         $(this).toggleClass('fa-toggle-on');
         $('#contribForm').toggleClass('d-none');
     };
+
+/**
+ * Updates a bean from a modal form
+ * Expects to be called on the button that opens the form
+ * @param e - The event reference
+ *
+ */
+    function editItem(e) 
+    {
+        let mID = $(this).parent().attr('data-target');
+        $('#'+mID).modal('show');
+        $('#'+e.data.formName+mID).on('submit', function(event){
+            event.preventDefault();
+            $.ajax({
+                type: 'PATCH',
+                url: base+'/ajax/update/'+e.data.type+'/'+$(this).parent().attr('data-id'),
+                data: $(this).serialize(),
+                error: function(jx) { bootbox.alert('<h3>Update failed</h3>'+jx.responseText); }
+            });
+            $('#'+mID).modal('hide');
+        });
+    };
