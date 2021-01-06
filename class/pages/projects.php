@@ -11,8 +11,6 @@
     namespace Pages;
 
     use \Support\Context as Context;
-    
-    
 /**
  * Support /project/
  */

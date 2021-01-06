@@ -41,7 +41,9 @@
                     {
                         $projectName = $formData->mustfetch('pname');
                         $projectDesc = $formData->mustfetch('pdesc');
-                        if (!ctype_alnum($projectName))
+
+                        // Alphanumeric with spaces is valid
+                        if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
                         {
                             $context->local()->message(\Framework\Local::ERROR, "Please ensure project name is alphanumeric");
                         }
