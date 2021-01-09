@@ -36,11 +36,11 @@
         let card = $(this).parent().parent();
         if (attatchment)
         {
-            framework.deletebean(e, this, e.data.type, nid, function(){hideCardRmFile(card, attatchment);}, "");
+            framework.deletebean(e, this, e.data.type, nid, function() { hideCardRmFile(card, attatchment); }, "");
         }
         else 
         {
-            framework.deletebean(e, this, e.data.type, nid, function(){hideCard(card);}, "");
+            framework.deletebean(e, this, e.data.type, nid, function() { hideCard(card); }, "");
         }  
     };
 /**
@@ -71,6 +71,7 @@
                 type: 'PATCH',
                 url: base+'/ajax/update/'+e.data.type+'/'+$(this).parent().attr('data-id'),
                 data: $(this).serialize(),
+                success: function(data, txt) { if (txt === 'success') { location.reload(); } }, 
                 error: function(jx) { bootbox.alert('<h3>Update failed</h3>'+jx.responseText); }
             });
             $('#'+mID).modal('hide');
