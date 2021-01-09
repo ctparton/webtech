@@ -38,6 +38,17 @@
 {% block onload %}
     $('.contribBtn').on('click', toggleContributors);
     $('.editb').click({type: "note", formName: "noteEditForm"}, editItem);
+    $('#contribForm').on('submit', function(event) 
+        {
+            event.preventDefault();
+            $.ajax({
+                type: 'PATCH',
+                url: base+'/ajax/update/project/'+{{pid}},
+                data: $(this).serialize(),
+                success: function(data, txt) { if (txt === 'success') { location.reload(); } }, 
+                error: function(jx) { bootbox.alert('<h3>Update failed</h3>'+jx.responseText); }
+            });
+        });
 {% endblock onload %}
 
 

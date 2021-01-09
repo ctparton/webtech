@@ -42,7 +42,7 @@
         <p>Oh no! No projects found with title '{{sQuery}}' </p>
     {% endif %}
     <div class="row">
-        {% for project in projects|filter(p => user.login in p.sharedUserList|join(', '))%}       
+        {% for project in projects|filter(p => user in p.sharedUserList|join(', '))%}       
             <div class="col-md-6 my-3"> 
                 <div class="card" >
                     <div data-id={{project.getID}} class="card-body">

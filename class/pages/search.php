@@ -26,23 +26,6 @@
  */
         public function handle(Context $context)
         {
-            $formData = $context->formdata('get');
-            $context->local()->addval('user', $context->user());
-            if ($formData->exists('search'))
-            {
-                $query = $formData->fetch('search');
-                $context->local()->addval('sQuery', $query );
-                if (!empty($query))
-                {
-                    $projects = R::find( 'project', ' name LIKE ? ', [ $query.'%' ] );
-                } 
-                else 
-                {
-                    $projects = [];
-                }
-                
-                $context->local()->addval('projects', $projects); 
-            }
             return '@content/search.twig';
         }
     }

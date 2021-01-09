@@ -12,7 +12,7 @@
             <ul class="navbar-nav mr-auto">
                     {% if context.hasUser %}
                         <li class="nav-item{{action == 'projects' ? ' active'}}"><a class="nav-link" href="{{base}}/projects/">Projects</a></li>
-                        <li class="nav-item{{action == 'create' ? ' active'}}"><a class="nav-link" href="{{base}}/create/">Create</a></li>
+                        <li class="nav-item{{action == 'create' ? ' active'}}"><a class="nav-link" href="{{base}}/project/">Create</a></li>
                     {% endif %}  
                     <li class="nav-item{{action == 'about' ? ' active'}}"><a class="nav-link" href="{{base}}/about/">About</a></li> 
                     {% if context.hasAdmin %}
@@ -84,7 +84,7 @@
                     <li class="nav-item{{action == 'login' ? ' active'}}"><a class="nav-link" href="{{base}}/login/">Login</a></li>
                 </ul>
             {% endif %}
-            <form class="form-inline my-2 my-lg-0" action="{{base}}/search/" method="get">
+            <form class="form-inline my-2 my-lg-0" action="{{base}}/project/" method="get">
                 <input class="form-control mr-sm-2" type="text" name="search" placeholder="Search by title" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="Search"><i class="fas fa-search"></i></button>
             </form>

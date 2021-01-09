@@ -1,6 +1,6 @@
 <?php
 /**
- * A class that handles the update AJAX operation for updating a project bean via a form
+ * A class that handles the update AJAX operation for updating a project or note bean via a form
  *
  * @author Callum Parton <c.parton@ncl.ac.uk>
  * @copyright 2020 Callum Parton
@@ -8,10 +8,10 @@
     namespace Ajax;
     use \Framework\Web\StatusCodes;
 /**
- * Attach operation
+ * Update operation
  *
- * It expects a URL of the form /ajax/update/BEAN_TYPE/BEAN_ID and to have a POST
- * of some form data
+ * It expects a URL of the form /ajax/update/BEAN_TYPE/BEAN_ID and to have a PATCH
+ * of some form data sent
  */
     final class Update extends \Framework\Ajax\Ajax
     {
@@ -43,12 +43,14 @@
             $type = strtolower($rest[1]);
             if (!in_array($type, ['project', 'note']))
             {
+                $context->web()->bad("Expecting BEAN_TYPE to be 'project' or 'note'");
                 throw new \Framework\Exception\BadValue('Invalid bean');
             }
             
             if (!$context->hasuser())
             { 
                 // If no user logged in, throw error. Should not happen given this page has a login requirement
+                $context->web()->sendJSON("You must be logged in to perform this action", StatusCodes::HTTP_UNAUTHORIZED);
                 throw new \Framework\Exception\InternalError('No user');
             }
 
@@ -56,51 +58,105 @@
             // Handle project update
             if ($type === 'project')
             {
-                if ($formData->exists('pname')) 
+                try 
                 {
-                    try 
+                    $project = $context->load($type, $rest[2]);
+                    if ($context->user()->login !== $project->owner()->login)
                     {
-                        $project = $context->load($type, $rest[2]);
-                        try 
-                        {
-                            $projectName = $formData->mustfetch('pname');
-                            $projectDesc = $formData->mustfetch('pdesc');
-                            $change = FALSE;
-    
-                            // Alphanumeric with spaces is valid
-                            if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
+                        $context->web()->noAccess("Only the owner of the project can update");
+                    }
+                    else 
+                    {
+                        if ($formData->exists('pname')) 
+                        {      
+                            try 
                             {
-                                $context->web()->sendJSON("Cannot update, name must be alphanumeric ".$projectName, StatusCodes::HTTP_BAD_REQUEST);
-                            }
-                            else
-                            {
-                                if ($project->name !== $projectName && !empty($projectName))
+                                $projectName = $formData->mustfetch('pname');
+                                $projectDesc = $formData->mustfetch('pdesc');
+                                $change = FALSE;
+        
+                                // Alphanumeric with spaces is valid
+                                if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
                                 {
-                                    $project->name = $projectName;
-                                    $change = TRUE;
+                                    $context->web()->bad("Cannot update, name must be alphanumeric ".$projectName);
                                 }
-                                if ($project->description !== $projectDesc && !empty($projectDesc))
+                                else
                                 {
-                                    $project->description = $projectDesc;
-                                    $change = TRUE;
+                                    if ($project->name !== $projectName && !empty($projectName))
+                                    {
+                                        $project->name = $projectName;
+                                        $change = TRUE;
+                                    }
+                                    if ($project->description !== $projectDesc && !empty($projectDesc))
+                                    {
+                                        $project->description = $projectDesc;
+                                        $change = TRUE;
+                                    }
+                                }
+                                if ($change)
+                                {
+                                    \R::store( $project);
+                                    $context->web()->sendJSON("The project (".$projectName.") has been updated");
                                 }
                             }
-                            if ($change)
+                            catch (\Framework\Exception\BadValue $e) 
                             {
-                                \R::store( $project);
-                                $context->web()->sendJSON("The project (".$projectName.") has been updated  ");
+                                $context->web()->bad("Please ensure project has name and a description");
+                            }    
+                        }
+                        else if ($formData->exists('contributor'))
+                        {                     
+                            try 
+                            {
+                                $contributor = $formData->mustfetch('contributor');
+                                $siteinfo = \Support\SiteInfo::getinstance();
+        
+                                // check if user is not current user or already on project
+                                if ($contributor !== $context->user()->login && !in_array($contributor, array_map(function($e) { return $e->login; }, $project->sharedUserList)))
+                                {
+                                    // if user is a registered user
+                                    if(in_array($contributor, array_map(function($e){ return $e->login; }, $siteinfo->users()))) 
+                                    {
+                                        // filter users to get the added user
+                                        $addedUser = array_filter($siteinfo->users(), function($e) use (&$contributor) {return $e->login === $contributor;});
+                                        if (count($addedUser) == 1)
+                                        {
+                                            $user = $context->load('user', (int) $addedUser[array_key_first($addedUser)]->getID(), TRUE);
+                                            $project->sharedUserList[] = $user;
+                                            \R::store($project);
+                                            $context->web()->sendJSON("Added new contributor to project");
+                                        } 
+                                        else 
+                                        {
+                                            $context->web()->bad('username '.$contributor.' does not exist or is not unique');
+                                        }                           
+                                    }
+                                    else 
+                                    {
+                                        $context->web()->bad('Can not find user with username '.$contributor);
+                                    }
+                                }
+                                else 
+                                {
+                                    $context->web()->bad($contributor.' is already on the project');
+                                }
+                                
+                            }
+                            catch (\Framework\Exception\BadValue $e) 
+                            {
+                                $context->web()->bad("Must complete contributors field");
                             }
                         }
-                        catch (\Framework\Exception\BadValue $e) 
+                        else
                         {
-                            $context->web()->sendJSON("Please ensure project has name and a description", StatusCodes::HTTP_BAD_REQUEST);
+                            $context->web()->bad("Form type not expected");
                         }
                     }
-                    catch (\Framework\Exception\MissingBean $e)
-                    {
-                        $context->web()->sendJSON("Could not load project", StatusCodes::HTTP_BAD_REQUEST);
-                    } 
                 }
+                catch (\Framework\Exception\MissingBean $e)
+                {
+                    $context->web()->bad("Could not load project with this ID");
+                }        
             }
             else
             {
@@ -109,28 +165,47 @@
                     try 
                     {
                         $note = $context->load($type, $rest[2]); 
-   
-                        $text = $formData->mustfetch('notetext');
-                        $change = FALSE;
-                        if ($note->text !== $text && !empty($text))
+                        if ($context->user()->login !== $note->owner()->login)
                         {
-                            $note->text = $text;
-                            $change = TRUE;
+                            $context->web()->noAccess("Only the owner of the note can update");
                         }
                         else 
                         {
-                            $context->web()->sendJSON("Updated note cannot be empty and must be different!", StatusCodes::HTTP_BAD_REQUEST);
+                            try 
+                            {
+                                $text = $formData->mustfetch('notetext');
+                            }
+                            catch (\Framework\Exception\BadValue $e) 
+                            {
+                                $context->web()->bad("Must complete contributors field");
+                            }
+                            
+                            $change = FALSE;
+                            if ($note->text !== $text && !empty($text))
+                            {
+                                $note->text = $text;
+                                $change = TRUE;
+                            }
+                            else 
+                            {
+                                $context->web()->bad("Updated note cannot be empty and must be different!");
+                            }
+                            if ($change)
+                            {
+                                \R::store( $note);
+                                $context->web()->sendJSON("Note updated with text ".$text);
+                            }
                         }
-                        if ($change)
-                        {
-                            \R::store( $note);
-                            $context->web()->sendJSON("Note updated with text ".$text);
-                        }
+                       
                     }
                     catch (\Framework\Exception\MissingBean $e) 
                     {
-                        $context->web()->sendJSON("Could not load note", StatusCodes::HTTP_BAD_REQUEST);
+                        $context->web()->bad("Could not load note");
                     }
+                }
+                else 
+                {
+                    $context->web()->bad("Form type not expected");
                 } 
             } 
         }          
