@@ -19,7 +19,6 @@
 {% endblock type %}
 
 {% block css %}
-<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
@@ -38,11 +37,11 @@
 {% endblock header %}
 
 {% block main %} 
-    {% if not projects %}
+    {% if not results %}
         <p>Oh no! No projects found with title '{{sQuery}}' </p>
     {% endif %}
     <div class="row">
-        {% for project in projects|filter(p => user in p.sharedUserList|join(', '))%}       
+        {% for project in results %}       
             <div class="col-md-6 my-3"> 
                 <div class="card" >
                     <div data-id={{project.getID}} class="card-body">

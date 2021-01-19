@@ -1,31 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 body {
-    font-family: sans-serif;
-    background-color:   #fff;
+	font-family: sans-serif;
+	background-color: #fff;
 }
 
 .delb, .noconfirm {
-    color:              red;
+	color: red;
 }
 
-.actb,.admb,.editb,.delb,.devb,.reqb,.rdob,.disb {
-    cursor:             pointer;
+.actb, .admb, .editb, .delb, .devb, .reqb, .rdob, .disb {
+	cursor: pointer;
 }
 
 .fadis {
-    color:              #aaa
+	color: #aaa;
 }
 
 .notvalid {
-    background-color:   #ddd
+	background-color: #ddd;
 }
 
 .fader {
-    opacity:            1;
-    -webkit-transition: opacity 1000ms linear;
-    transition:         opacity 1000ms linear;
-    background-color:   yellow;
+	opacity: 1;
+	-webkit-transition: opacity 1000ms linear;
+	transition: opacity 1000ms linear;
+	background-color: yellow;
 }
 
 .z-1k {
-    z-index:            1000
+	z-index: 1000;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
+
+.bg-dark {
+	background-color: #E36387 !important;
+}
+
+.btn-info {
+	background-color: #72CEEF;
+	border-color: #72CEEF;
+}
+
+.btn-info:hover {
+	background-color: #3bbbe9;
+	border-color: #3bbbe9;
+}
+
+.btn-outline-success {
+	color: #ffffff;
+	border-color: #ffffff;
+}
+
+.card {
+	border-radius: 5px;
+	background: #fff;
+	box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08), 0 0 6px rgba(0, 0, 0, 0.05);
+	transition: 0.3s transform cubic-bezier(0.155, 1.105, 0.295, 1.12), 0.3s box-shadow, 0.3s -webkit-transform cubic-bezier(0.155, 1.105, 0.295, 1.12);
+	padding: 14px 80px 18px 36px;
+}
+
+.card:hover {
+	transform: scale(1.05);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card-footer {
+	background-color: #ffffff;
+}
+
+.card-text {
+	margin-top: 15px;
+}
+
+.deletearea {
+	border-top: 1px;
 }

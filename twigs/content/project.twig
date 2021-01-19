@@ -23,7 +23,6 @@
 
 {% block css %}
 {# <link> for any other CSS files you need #}
-<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
@@ -51,6 +50,12 @@
         });
 {% endblock onload %}
 
+{% if not page is defined %}
+    {% set page = 1 %}
+    {% set pagesize = 10 %}
+{% endif %}
+
+{% set pages = siteinfo.pagecount('note', pagesize, "project_id = " ~ project.getID) %}
 
 {% block header %}
    
@@ -76,8 +81,9 @@
                 {{f.submit({value: 'Submit'})}}     
                 {{f.endform()}} 
             {% endif %}
+            {% include '@util/paginate.twig' with { page : page, pagesize: pagesize, pages: pages} %}
             <div class="row">
-                {% for note in project.ownNoteList %}       
+                {% for note in notes %}       
                     <div class="col-md-12 my-3"> 
                         <div class="card note-card w-100">
                             <div data-id={{note.getID}} class="card-body">
@@ -117,6 +123,7 @@
                 </div>   
                 {% endfor %}    
             </div>
+            {% include '@util/paginate.twig' with { page : page, pagesize: pagesize, pages: pages} %}
         </article>
 {% endblock main %}
 

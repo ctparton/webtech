@@ -23,7 +23,6 @@
 {% endblock type %}
 
 {% block css %}
-<link rel="stylesheet" href="{{assets}}/scss/extra.scss"/>
 {% endblock css %}
 
 {% block scripts %}
@@ -61,7 +60,7 @@
                 <h2> You haven't worked on any projects yet </h2>    
             {% endif %}    
             <div class="row">
-                {% for project in projects|filter(p => user.login in p.sharedUserList|join(', ')) %}   
+                {% for project in user.sharedProjectList %}   
                     <div class="col-md-6 my-3"> 
                         <div class="card" >
                             <div data-id={{project.id}} class="card-body">

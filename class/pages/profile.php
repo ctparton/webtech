@@ -34,14 +34,10 @@
                 throw new \Framework\Exception\InternalError('No user');
             }
             $user = $context->user();
-            $projects = \R::findAll('project');
-
             // Initialise time spent on each project
             $pTime = array();
-            // filter out projects that user does not own or contribute to  
-            $projects = array_filter($projects, function($e) use (&$user) {return in_array($user->login, array_map(function($e) { return $e->login; }, $e->sharedUserList) ); });
 
-            foreach ($projects as $p) 
+            foreach ($user->sharedProjectList() as $p) 
             {
                 try
                 {
@@ -64,7 +60,6 @@
                 
             }
             $context->local()->addval('pTime', $pTime);
-            $context->local()->addval('projects', $projects);
             $context->local()->addval('user', $user);
             return '@content/profile.twig';
         }

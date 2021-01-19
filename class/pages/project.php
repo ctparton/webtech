@@ -31,7 +31,6 @@
         public function handle(Context $context)
         {
             $rest = $context->rest();
-
             if (!$context->hasuser())
             { 
                 // If no user logged in, throw error. Should not happen given this page has a login requirement
@@ -99,28 +98,33 @@
                         $context->local()->addval('sQuery', $query );
                         if (!empty($query))
                         {
-                            $projects = R::find( 'project', ' name LIKE ? ', [ $query.'%' ] );
+                            $results = R::find( 'project', ' name LIKE ? ', [ $query.'%' ] );
+                            // Filter results to ensure user can only see projects they belong to
+                            $results = array_filter($results, function($e) use (&$context) { return in_array($context->user()->login, array_map(function($e){ return $e->login; } , $e->sharedUserList)); });
                         } 
                         else 
                         {
-                            $projects = [];
+                            $results = [];
                         }
                         
-                        $context->local()->addval('projects', $projects); 
+                        $context->local()->addval('results', $results); 
                     }
                     return '@content/search.twig';
                 }            
             }
             else
             {
+               
+
                 // error will appear on page if project with id $rest[0] does not exist      
                 $project = $context->load('project', (int) $rest[0], TRUE);
                 // Pass project to twig, as we may be displaying a specific project in this case
+                
                 $context->local()->addval('pid', (int) $rest[0]);
                 $context->local()->addval('project', $project);
                 $timeSpent = R::getCell('SELECT SUM(duration) FROM note WHERE project_id = :pid AND user_id = :uid',[':pid' => $project->getID(), 'uid' => (int) $context->user()->getID()]);
                 $context->local()->addval('time', Project::fmtDuration($timeSpent));
-
+                
                 // If we are handling request to add a new note to current project
                 if (count($rest) > 1)
                 {
@@ -179,6 +183,17 @@
                 else
                 {
                     // We are handling /project/id
+
+                    // Setup pagination data
+                    $context->setpages();
+
+                    // retrieve page number and page size
+                    $fdt = $context->formData('get');
+                    $psize = $fdt->fetch('pagesize', 10, FILTER_VALIDATE_INT);
+                    $page = $fdt->fetch('page', 1, FILTER_VALIDATE_INT);
+                    // Fetch page of notes
+                    $context->local()->addval('notes', \Support\SiteInfo::getinstance()->fetch('note', 'project_id = ?', [$rest[0]], $page, $psize));
+                    
                     return '@content/project.twig';   
                 }       
             }

@@ -79,5 +79,14 @@
  * @todo Validate the joined field. Correct date, not in the future
  */
         }
+/**
+ * Return the array of projects associated with this user
+ *
+ * @return array
+ */
+        public function sharedProjectList() : array
+        {
+            return $this->bean->sharedProjectList;
+        }
     }
 ?>
