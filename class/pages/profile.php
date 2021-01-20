@@ -34,6 +34,8 @@
                 throw new \Framework\Exception\InternalError('No user');
             }
             $user = $context->user();
+            // Call to fresh user bean as otherwise projects are not updated
+            $user = $user->fresh();
             // Initialise time spent on each project
             $pTime = array();
 

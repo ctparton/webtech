@@ -104,7 +104,10 @@
                                 {% if user == note.owner.login %}
                                     <p class="card-text float-right">{{fa.delete("delb")}}</p> 
                                     <p data-toggle="modal" data-target={{note.getID}}>{{fa.edit("editb")}}</p>
-                                {% endif %}       
+                                {% else %}
+                                    <p class="card-text float-right">{{fa.fa("trash-alt", "disabled")}}</p> 
+                                    <p class="card-text">{{fa.fa("edit", "disabled")}}</p> 
+                                {% endif %}
                             </div>
                         </div>
                     </div> 

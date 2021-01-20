@@ -88,5 +88,15 @@
         {
             return $this->bean->sharedProjectList;
         }
+
+/**
+ * Return the own array of projects associated with this user
+ *
+ * @return array
+ */
+        public function ownProjectList() : array
+        {
+            return $this->bean->ownProjectList;
+        }
     }
 ?>

@@ -48,3 +48,12 @@ body {
 .deletearea {
   border-top: 1px;
 }
+
+.fas.disabled,
+.fas[disabled],
+.disabled > .fas,
+[disabled] > .fas {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+}

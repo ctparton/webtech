@@ -33,7 +33,8 @@
                 // If no user logged in, throw error. Should not happen given this page has a login requirement
                 throw new \Framework\Exception\InternalError('No user');
             }
- 
+            // Call to fresh user bean as otherwise projects are not updated
+            $user = $user->fresh();
             $context->local()->addval('user', $user);
             return '@content/projects.twig';
         }

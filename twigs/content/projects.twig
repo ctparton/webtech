@@ -42,7 +42,7 @@
 {% endblock header %}
 
 {% block main %} 
-    {% if projects %}
+    {% if user.sharedProjectList %}
         <p class="text-center">Hi {{user.login}}, here are your projects </a>
     {% else %}
         <p class="text-center">Hi {{user.login}}, you currently do not have any projects which you own or contribute to </a>
@@ -63,6 +63,9 @@
                         {% if user.login == project.owner.login %}
                             <p class="card-text">{{fa.delete("delb")}}</p> 
                             <p data-toggle="modal" data-target={{project.getID}}>{{fa.edit("editb")}}</p>
+                        {% else %}
+                            <p class="card-text">{{fa.fa("trash-alt", "disabled")}}</p> 
+                            <p class="card-text">{{fa.fa("edit", "disabled")}}</p> 
                         {% endif %}
                     </div>
                     <div data-id={{project.getID}} class="card-footer start-date">

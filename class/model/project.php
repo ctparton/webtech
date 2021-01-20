@@ -42,5 +42,22 @@
         {
             return $this->bean->user;
         }
+/**
+ * Automatically called by RedBean when a user tries to delete a project, this method adds extended permission checking for that
+ * in case a user bypasses the existing frontend provisions
+ *
+ * @param Context $context
+ *
+ * @throws \Framework\Exception\Forbidden
+ * @return void
+ */
+        public function delete() : void
+        {
+            $context = Context::getinstance();
+            if ($context->user()->login !== $this->bean->owner()->login)
+            {
+                throw new \Framework\Exception\Forbidden('Permission Denied');
+            }  
+        }
     }
 ?>
