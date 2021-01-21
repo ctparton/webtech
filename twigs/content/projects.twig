@@ -51,7 +51,7 @@
     <div class="row">
         {% for project in user.sharedProjectList %}       
             <div class="col-md-6 my-3"> 
-                <div class="card" >
+                <div class="card h-100" >
                     <div data-id={{project.getID}} class="card-body">
                         <h5 class="card-title">{{ project.name}}</h5>
                         <p class="card-text">{{project.description}}</p>
