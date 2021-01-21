@@ -35,6 +35,10 @@
 {% endblock setup %}
 
 {% block onload %}
+    $('.note-text').each(function(note)
+    {
+        $(this).html(urlify($(this).html()));
+    });
     $('.contribBtn').on('click', toggleContributors);
     $('.editb').click({type: "note", formName: "noteEditForm"}, editItem);
     $('#contribForm').on('submit', function(event) 
@@ -89,7 +93,7 @@
                             <div data-id={{note.getID}} class="card-body">
                                 <h5 class="card-title">Note added by {{ note.owner.login}}</h5>
                                 <h6 class="card-subtitle text-muted">At: {{note.start_date}}</h6>
-                                <p class="card-text">{{note.text}}</p>
+                                <p class="card-text note-text">{{note.text}}</p>
                                 {% if note.sharedUploadList is not empty %}
                                     <p class="font-weight-bold">Attachment</p>
                                     <div class="attatchment" data-id={{note.sharedUploadList|map((p) => p.getID)|join(',' )}}>

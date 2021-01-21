@@ -77,3 +77,17 @@
             $('#'+mID).modal('hide');
         });
     };
+
+/**
+ * Converts any links in <p> note text to a <a> link tag
+ * @param text - Note text
+ *
+ */
+    function urlify(text)
+    {
+        const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlRegex, function(url)
+        {
+            return '<a href="' + url + '">' + url + '</a>';
+        })
+    }
