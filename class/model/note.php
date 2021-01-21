@@ -38,6 +38,28 @@
         {
             return $this->bean->user;
         }
+
+/**
+ * Automatically called by RedBean when store is called
+ * this handles basic error checking when creating/updating note
+ *
+ * @param Context $context
+ *
+ * @throws \Framework\Exception\BadValue
+ * @return void
+ */
+        public function update() : void
+        {
+            if (empty($this->bean->text))
+            {
+                throw new \Framework\Exception\BadValue("Please ensure note text is not empty");
+            }
+            // Note must have valid duration
+            if (!ctype_digit($this->bean->duration) || $this->bean->duration < 0)
+            {
+                throw new \Framework\Exception\BadValue("Time spent on project must be a number >= 0");
+            }
+        }
 /**
  * Automatically called by RedBean when a user tries to delete a note, this method adds extended permission checking for that
  * in case a user bypasses the existing frontend provisions

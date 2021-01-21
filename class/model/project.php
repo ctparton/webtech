@@ -42,6 +42,28 @@
         {
             return $this->bean->user;
         }
+
+/**
+ * Automatically called by RedBean when store is called
+ * this handles basic error checking when creating/updating project
+ *
+ * @param Context $context
+ *
+ * @throws \Framework\Exception\BadValue
+ * @return void
+ */
+        public function update() : void
+        {
+            if (empty($this->bean->name) || empty($this->bean->description))
+            {
+                throw new \Framework\Exception\BadValue("Project Name and Project Description must have a value");
+            }
+            // Alphanumeric with spaces is valid
+            if (!preg_match('/^[\p{L}\p{N} ]+$/', $this->bean->name))
+            {
+                throw new \Framework\Exception\BadValue("Cannot update, name must be alphanumeric ".$this->bean->name);
+            }
+        }
 /**
  * Automatically called by RedBean when a user tries to delete a project, this method adds extended permission checking for that
  * in case a user bypasses the existing frontend provisions

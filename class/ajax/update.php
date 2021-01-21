@@ -74,25 +74,18 @@
                                 $projectName = $formData->mustfetch('pname');
                                 $projectDesc = $formData->mustfetch('pdesc');
                                 $change = FALSE;
-        
-                                // Alphanumeric with spaces is valid
-                                if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
+            
+                                if ($project->name !== $projectName && !empty($projectName))
                                 {
-                                    $context->web()->bad("Cannot update, name must be alphanumeric ".$projectName);
+                                    $project->name = $projectName;
+                                    $change = TRUE;
                                 }
-                                else
+                                if ($project->description !== $projectDesc && !empty($projectDesc))
                                 {
-                                    if ($project->name !== $projectName && !empty($projectName))
-                                    {
-                                        $project->name = $projectName;
-                                        $change = TRUE;
-                                    }
-                                    if ($project->description !== $projectDesc && !empty($projectDesc))
-                                    {
-                                        $project->description = $projectDesc;
-                                        $change = TRUE;
-                                    }
+                                    $project->description = $projectDesc;
+                                    $change = TRUE;
                                 }
+                                
                                 if ($change)
                                 {
                                     \R::store( $project);
@@ -101,7 +94,7 @@
                             }
                             catch (\Framework\Exception\BadValue $e) 
                             {
-                                $context->web()->bad("Please ensure project has name and a description");
+                                $context->web()->bad($e->getMessage());
                             }    
                         }
                         else if ($formData->exists('contributor'))
@@ -173,27 +166,26 @@
                         {
                             try 
                             {
-                                $text = $formData->mustfetch('notetext');
+                                $text = $formData->mustfetch('notetext');          
+                                $change = FALSE;
+                                if ($note->text !== $text && !empty($text))
+                                {
+                                    $note->text = $text;
+                                    $change = TRUE;
+                                }
+                                else 
+                                {
+                                    $context->web()->bad("Updated note cannot be empty and must be different!");
+                                }
+                                if ($change)
+                                {
+                                    \R::store( $note);
+                                    $context->web()->sendJSON("Note updated with text ".$text);
+                                }
                             }
                             catch (\Framework\Exception\BadValue $e) 
                             {
-                                $context->web()->bad("Must complete contributors field");
-                            }
-                            
-                            $change = FALSE;
-                            if ($note->text !== $text && !empty($text))
-                            {
-                                $note->text = $text;
-                                $change = TRUE;
-                            }
-                            else 
-                            {
-                                $context->web()->bad("Updated note cannot be empty and must be different!");
-                            }
-                            if ($change)
-                            {
-                                \R::store( $note);
-                                $context->web()->sendJSON("Note updated with text ".$text);
+                                $context->web()->bad($e->getMessage());
                             }
                         }
                        

@@ -54,33 +54,19 @@
                             try 
                             {
                                 $projectName = $formData->mustfetch('pname');
-                                $projectDesc = $formData->mustfetch('pdesc');
-        
-                                // Alphanumeric with spaces is valid
-                                if (!preg_match('/^[\p{L}\p{N} ]+$/', $projectName))
-                                {
-                                    $context->local()->message(\Framework\Local::ERROR, "Please ensure project name is alphanumeric");
-                                }
-                                elseif (empty($projectName) || empty($projectDesc))
-                                {
-                                    $context->local()->message(\Framework\Local::ERROR, "Please ensure project name and project description are not empty");
-                                }
-                                else 
-                                {
-                                    $projectModel = R::dispense('project');
-                                    $projectModel->sharedUserList[] = $user;
-                                    $projectModel->user = $user; 
-                                    $projectModel->name = $projectName;
-                                    $projectModel->description = $projectDesc;
-                                    $projectModel->startDate = $context->utcnow();
-                                    R::store( $projectModel);
-                                    $context->local()->message(\Framework\Local::MESSAGE, "A project (".$projectName.") has been created");                                
-                                }
-                    
+                                $projectDesc = $formData->mustfetch('pdesc'); 
+                                $projectModel = R::dispense('project');
+                                $projectModel->sharedUserList[] = $user;
+                                $projectModel->user = $user; 
+                                $projectModel->name = $projectName;
+                                $projectModel->description = $projectDesc;
+                                $projectModel->startDate = $context->utcnow();
+                                R::store( $projectModel);
+                                $context->local()->message(\Framework\Local::MESSAGE, "A project (".$projectName.") has been created");                                
                             }
                             catch (\Framework\Exception\BadValue $e) 
                             {
-                                $context->local()->message(\Framework\Local::ERROR, "Please ensure project has name and a description");
+                                $context->local()->message(\Framework\Local::ERROR, $e->getMessage());
                             }
                         }
                         catch (\Framework\Exception\MissingBean $e)
@@ -114,8 +100,6 @@
             }
             else
             {
-               
-
                 // error will appear on page if project with id $rest[0] does not exist      
                 $project = $context->load('project', (int) $rest[0], TRUE);
                 // Pass project to twig, as we may be displaying a specific project in this case
@@ -151,31 +135,18 @@
                             }          
                             $text = $formData->mustfetch('notetext');
                             $duration = $formData->fetch('secondsholder');
-                     
-                            if (!ctype_digit($duration) || $duration < 0)
-                            {
-                                $context->local()->message(\Framework\Local::ERROR, "Time spent on project must be a number >= 0");
-                            }
-                            // check note text is not empty
-                            elseif (empty($text))
-                            {
-                                $context->local()->message(\Framework\Local::ERROR, "Please ensure note text is not empty");
-                            }
-                            else 
-                            {
-                                $noteModel->text = $text;
-                                $noteModel->duration = $duration;
-                                $noteModel->user = $user; 
-                                $noteModel->startDate = $context->utcnow();
-                                $project->ownNoteList[] = $noteModel;
-                                R::store( $project);
-                                R::store($noteModel);
-                                $context->local()->message(\Framework\Local::MESSAGE, "A new note has been created ");  
-                            }     
+                            $noteModel->text = $text;
+                            $noteModel->duration = $duration;
+                            $noteModel->user = $user; 
+                            $noteModel->startDate = $context->utcnow();
+                            $project->ownNoteList[] = $noteModel;
+                            R::store( $project);
+                            R::store($noteModel);
+                            $context->local()->message(\Framework\Local::MESSAGE, "A new note has been created ");     
                         }
                         catch (\Framework\Exception\BadValue $e) 
                         {
-                            $context->local()->message(\Framework\Local::ERROR, "A new note must contain text");
+                            $context->local()->message(\Framework\Local::ERROR, $e->getMessage());
                         }
                     }       
                     return '@content/newnote.twig';
