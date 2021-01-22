@@ -13,10 +13,7 @@
     namespace Model;
 
     use \Support\Context;
-/**
- * Upload table stores info about files that have been uploaded...
- * @psalm-suppress UnusedClass
- */
+
     class Note extends \RedBeanPHP\SimpleModel
     {
         
