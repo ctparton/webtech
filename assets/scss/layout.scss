@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 body {
-	font-family: sans-serif;
+	font-family: 'Roboto', sans-serif;
 	background-color: #fff;
 }
 
@@ -30,10 +30,6 @@ body {
 
 .z-1k {
 	z-index: 1000;
-}
-
-body {
-	font-family: 'Roboto', sans-serif;
 }
 
 .bg-dark {
@@ -80,8 +76,7 @@ body {
 	border-top: 1px;
 }
 
-.fas.disabled,
-.fas[disabled],
+.fas .disabled,
 .disabled > .fas,
 [disabled] > .fas {
     opacity: 0.2;

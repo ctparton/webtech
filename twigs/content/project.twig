@@ -37,7 +37,7 @@
 {% block onload %}
     $('.note-text').each(function(note)
     {
-        $(this).html(urlify($(this).html()));
+        $(this).html(convertToLinks($(this).html()));
     });
     $('.contribBtn').on('click', toggleContributors);
     $('.editb').click({type: "note", formName: "noteEditForm"}, editItem);

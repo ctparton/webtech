@@ -79,11 +79,11 @@
     };
 
 /**
- * Converts any links in <p> note text to a <a> link tag
- * @param text - Note text
+ * Converts any plain text links in <p> note text to a <a> link tags
+ * @param text - Plain text
  *
  */
-    function urlify(text)
+    function convertToLinks(text)
     {
         const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
         return text.replace(urlRegex, function(url)
