@@ -1,9 +1,9 @@
 /**
- * This removes a card from the DOM.
+ * This removes a card from the DOM using Bootstrap display properties.
  *
- * @param {Object} obj - The card to remove
+ * @param {object} obj - The card node to remove
  *
- * @return void
+ * @return {void}
  */
     function hideCard(obj)
     {
@@ -11,13 +11,13 @@
     };
 
 /**
- * This removes a card from the DOM and makes an ajax call to 
+ * This removes a card from the DOM using Bootstrap display properties and makes an ajax call to 
  * DELETE an attachment associated with it.
  *
- * @param {Object} obj - The card to remove
- * @param {String} id - The data-id attribute of the attachment
+ * @param {object} obj - The card node to remove
+ * @param {int} id - The data-id attribute of the attachment
  * 
- * @return void
+ * @return {void}
  */
     function hideCardRmFile(obj, id)
     {
@@ -32,9 +32,9 @@
  * This function makes an ajax call to delete the bean pointed to by type with 
  * the data-id attribute, also removes attachment if the note has one
  *
- * @param e - The event reference
+ * @param {object} e - The event reference
  *
- * @return void
+ * @return {void}
  */
     function delbeanDomRemove(e)
     {
@@ -54,9 +54,9 @@
 /**
  * Toggles the contributor form on the project page
  *
- * @param e - The event reference
+ * @param {object} e - The event reference
  *
- * @return void
+ * @return {void}
  */
     function toggleContributors(e) 
     {
@@ -67,9 +67,9 @@
 /**
  * Updates a bean from a modal form
  * Expects to be called on the button that opens the form
- * @param e - The event reference
+ * @param {object} e - The jQuery event 
  *
- * @return void
+ * @return {void}
  */
     function editItem(e) 
     {
@@ -91,9 +91,9 @@
 
 /**
 * Converts any plain text links in <p> note text to a <a> link tags
-* @param text - Plain text
+* @param {string} text - innerHTML of <p> note text
 *
-* @return HTML text
+* @return {string} - input text regex replaced with <a> if necessary
 */
     function convertToLinks(text)
     {

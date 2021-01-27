@@ -2,9 +2,9 @@
 * This method utilises D3.JS to create an SVG bar chart of the time the user has 
 * spent across projects.
 *
-* @param {Array} data - An array of objects to create the bar chart from
+* @param {Array.<{name: string, time: number}>} data - An array of project objects (name, time) to create the bar chart from
 *
-* @return svg bar chart
+* @return {string} HTML SVG bar chart element
 */
     function createTimeChart(data)
     {
